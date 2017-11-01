@@ -2,13 +2,9 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import ch.qos.logback.core.net.SyslogOutputStream
-import play.api.{Configuration, Logger}
+import play.api.Configuration
 import play.api.libs.ws.WSClient
 import play.api.mvc.{AbstractController, ControllerComponents}
-import play.api.data._
-import play.api.data.Forms._
-import play.api.data.validation.Constraints._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.SiteService

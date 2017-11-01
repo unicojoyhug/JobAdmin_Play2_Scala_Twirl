@@ -2,19 +2,15 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import play.api.{Configuration, Logger}
+import play.api.{Configuration}
 import play.api.libs.ws.WSClient
 import play.api.mvc.{AbstractController, ControllerComponents}
-import play.api.data._
-import play.api.data.Forms._
-import play.api.data.validation.Constraints._
+
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.{CategoryService, CompanyService, JobAdService}
-import models.{Category, Company, JobAd, JobAdView}
-import org.joda.time.DateTime
+import models.{JobAdView}
 
-import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 
@@ -24,7 +20,6 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, jobAdServi
 
   def getAllJobAds (site: String) = Action.async {
 
-    //val lists : scala.concurrent.Future[List[JobAd]] = jobAdService.getAllJobs(config, site)
     val lists : scala.concurrent.Future[List[JobAdView]] = getAllJobAdViews(config, site)
 
     lists map {
