@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class JobAdServiceImpl @Inject()(ws: WSClient) extends JobAdService {
 
-  override def getAllJobs(configuration: Configuration, site: String): Future[List[JobAd]] = {
+  def getAllJobs(configuration: Configuration, site: String): Future[List[JobAd]] = {
     val url: String = configuration.get[String]("job_api.url")
     val api_key: String = configuration.get[String]("security.apikeys")
 
@@ -28,7 +28,18 @@ class JobAdServiceImpl @Inject()(ws: WSClient) extends JobAdService {
 
   override def getMsg() = "Vælg Site"
 
-  override def convertDomainToViewModel(jobAdsResult: List[JobAd], companiesResult: List[Company], categoriesResult: List[Category]): List[JobAdView] = {
+  override def getAllJobAdViews (companyService: CompanyService, categoryService: CategoryService, config: Configuration, site: String): Future[List[JobAdView]] = {
+
+    for {
+      r1 <- getAllJobs(config, site)
+      r2 <- companyService.getAllCompanies(config)
+      r3 <- categoryService.getAllCategoriesBySite(config, site)
+    } yield convertDomainToViewModel(r1, r2, r3)
+
+  }
+
+
+  def convertDomainToViewModel(jobAdsResult: List[JobAd], companiesResult: List[Company], categoriesResult: List[Category]): List[JobAdView] = {
     var jobAdViewList = ListBuffer[JobAdView]()
 
     for (jobAd <- jobAdsResult){
@@ -43,7 +54,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient) extends JobAdService {
         jobAdView.category_name =
           categoriesResult.find(c => c.id == jobAdView.category_id).get.name
       }else{
-        jobAdView.category_name = "N/A"
+        jobAdView.category_name="N/A"
       }
 
       jobAdView.company_id = jobAd.company_id

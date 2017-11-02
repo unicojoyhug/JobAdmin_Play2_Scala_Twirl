@@ -20,21 +20,11 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, jobAdServi
 
   def getAllJobAds (site: String) = Action.async {
 
-    val lists : scala.concurrent.Future[List[JobAdView]] = getAllJobAdViews(config, site)
+    val lists : scala.concurrent.Future[List[JobAdView]] = jobAdService.getAllJobAdViews(companyService, categoryService, config, site)
 
     lists map {
       list =>  Ok(views.html.jobs( jobAdService.getMsg(),list))
     }
-
-  }
-
-  def getAllJobAdViews (config: Configuration, site: String): Future[List[JobAdView]] = {
-
-    for {
-      r1 <- jobAdService.getAllJobs(config, site)
-      r2 <- companyService.getAllCompanies(config)
-      r3 <- categoryService.getAllCategoriesBySite(config, site)
-    } yield jobAdService.convertDomainToViewModel(r1, r2, r3)
 
   }
 

@@ -8,7 +8,7 @@ var site = {
         var name = "finanswatch.dk";
         $('#jobIframe').attr("src", "jobs/"+name);
 
-        $('#site').change(function () {z
+        $('#site').change(function () {
              name = $(this).find("option:selected").text().trim();
             $('#jobIframe').attr("src", "jobs/"+name);
       });
