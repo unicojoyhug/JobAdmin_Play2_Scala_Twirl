@@ -1,11 +1,9 @@
-@import models.JobAd
-@import org.joda.time.DateTime
+
 @import org.joda.time.format.DateTimeFormat
 @(message: String, lists : List[JobAdView])
+@stylesheet()
+@scripts()
 
-@main("JP Job Admin")  {
-
-    @defining(play.core.PlayVersion.current) { version =>
         <div id="wrap">
             <div class="container">
                 <h1>Joblisten</h1>
@@ -16,10 +14,10 @@
                     <th>Navn</th>
                     <th>Virksomhed</th>
                     <th>Kategori</th>
-                    <th>Logo</th>
                     <th>Job type</th>
                     <th>Startdato</th>
                     <th>Udløbsdato</th>
+                    <th>Logo</th>
                     <th>Slet</th>
                     <th>Edit</th>
                 </tr>
@@ -30,7 +28,6 @@
                         <td>@jobAd.title</td>
                         <td>@jobAd.company_name</td>
                         <td>@jobAd.category_name</td>
-                        <td><img src="@{jobAd.logo}"></td>
                         <td>@{
                             if(jobAd.premium){
                                 "Basis Plus"
@@ -46,6 +43,8 @@
                         </td>
                         <td> @defining(DateTimeFormat.forPattern("yyyy-MM-dd")) { dateFormatter =>
                             @dateFormatter.print(jobAd.enddate)}</td>
+                        <td class="logo"><img class="companylogo" src=@jobAd.logo alt="N/A"></td>
+
                         <td><button type="submit" class="btn btn-outline-danger">Slet</button></td>
                         <td><button type="submit" class="btn btn-outline-info">Edit</button></td>
 
@@ -56,5 +55,4 @@
             </div>
         </div>
 
-    }
-}
+

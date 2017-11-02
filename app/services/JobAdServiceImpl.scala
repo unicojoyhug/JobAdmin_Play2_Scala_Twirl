@@ -42,6 +42,8 @@ class JobAdServiceImpl @Inject()(ws: WSClient) extends JobAdService {
       if(jobAdView.category_id != -1){
         jobAdView.category_name =
           categoriesResult.find(c => c.id == jobAdView.category_id).get.name
+      }else{
+        jobAdView.category_name = "N/A"
       }
 
       jobAdView.company_id = jobAd.company_id

@@ -1,9 +1,5 @@
 package models
 
-
-import play.api.data._
-import play.api.data.Forms._
-
 case class JobApiException(exc: String) extends Exception(exc)
 
 case class Site(id: Int, name: String, locale: String, createdate: Long, updatedate: Long)

@@ -2,3 +2,27 @@
     text-align: center;
     float: none !important;
 }
+
+.companylogo {
+    height: 70%;
+    width: 100%;
+}
+
+.logo{
+    background: white;
+    width:100;
+}
+
+table {
+    text-align: center;
+}
+
+iframe {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    margin: auto ;
+    left: 0;
+    border:none;
+}
