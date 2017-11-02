@@ -6,8 +6,10 @@ import play.api.Configuration
 import scala.concurrent.Future
 
 trait JobAdService {
-  //def getAllJobs(configuration: Configuration, site: String) : Future[List[JobAd]]
   def getMsg(): String
-  def getAllJobAdViews (companyService: CompanyService, categoryService: CategoryService, config: Configuration, site: String): Future[List[JobAdView]]
-  //def convertDomainToViewModel(jobAdsResult: List[JobAd], companiesResult: List[Company], categoriesResult: List[Category]): List[JobAdView]
+
+  def getAllJobAdViews (site: String): Future[List[JobAdView]]
+
+  //def createJobAd(jobAdView: JobAdView, site: String) : Future[Int]
+
 }

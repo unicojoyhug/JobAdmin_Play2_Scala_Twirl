@@ -15,8 +15,8 @@ class JobAdView {
   var trackinglink: String = _
   var startdate: Long = _
   var enddate: Long = _
-  var category_id: Int = _
-  var category_name: String = _
+  var category_id: Option[Int] = None
+  var category_name: Option[String] = None
   var site_id: Int = _
   var company_id: Int = _
   var company_name: String = _
