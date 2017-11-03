@@ -25,12 +25,12 @@ class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdServi
   }
 
   //TODO: TEST
-  def createJobAd (jobAdView: JobAdView, site: String) = Action.async {
+ /* def createJobAd (jobAdView: JobAdView, site: String) = Action.async {
 
     val result : scala.concurrent.Future[Int] = jobAdService.createJobAd(jobAdView, site)
 
     result map {
       list =>  Ok(Redirect(routes.JobController.getAllJobAds(site)))
     }
-  }
+  }*/
 }
