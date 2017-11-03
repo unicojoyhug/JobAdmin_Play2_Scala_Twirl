@@ -40,21 +40,18 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
   }
 
-/*
+
   override def createJobAd(jobAdView: JobAdView, site: String): Future[Int] = {
 
     var jobAd = convertJobAdView(jobAdView)
 
     implicit val format = Json.writes[JobAd]
-    val futureResponse: Future[Int] = ws.url(s"$url/$site/jobs").addHttpHeaders("X-API-KEY" -> api_key).post(jobAd).map {
+    val futureResponse: Future[Int] = ws.url(s"$url/$site/jobs").addHttpHeaders("X-API-KEY" -> api_key).post(Json.toJson(jobAd)).map {
       result => result.json.as[Int]
     }
 
-
     return futureResponse
-
   }
-*/
 
 
   def convertJobAdView(jobAdView: JobAdView): JobAd = {
