@@ -11,10 +11,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import models.Site
 
 @Singleton
-class SiteServiceImpl @Inject()(ws: WSClient) extends SiteService {
+class SiteServiceImpl @Inject()(ws: WSClient, configuration: Configuration) extends SiteService {
 
 
-  override def getAllSites(configuration: Configuration): Future[List[Site]] = {
+  override def getAllSites(): Future[List[Site]] = {
     val url:String = configuration.get[String]("job_api.url")
     val api_key: String = configuration.get[String]("security.apikeys")
     implicit val format = Json.reads[Site]

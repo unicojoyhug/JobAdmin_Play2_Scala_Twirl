@@ -34,14 +34,14 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
     for {
       r1 <- getAllJobs(site)
-      r2 <- companyService.getAllCompanies(configuration)
-      r3 <- categoryService.getAllCategoriesBySite(configuration, site)
+      r2 <- companyService.getAllCompanies()
+      r3 <- categoryService.getAllCategoriesBySite(site)
     } yield convertDomainToViewModel(r1, r2, r3)
 
   }
 
 
-  override def createJobAd(jobAdView: JobAdView, site: String): Future[Int] = {
+  /*override def createJobAd(jobAdView: JobAdView, site: String): Future[Int] = {
 
     var jobAd = convertJobAdView(jobAdView)
 
@@ -52,7 +52,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
     return futureResponse
   }
-
+*/
 
   def convertJobAdView(jobAdView: JobAdView): JobAd = {
     var jobAd = new JobAd(

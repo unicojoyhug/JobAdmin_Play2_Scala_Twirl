@@ -7,5 +7,5 @@ import scala.concurrent.Future
 
 trait CategoryService {
 
-  def getAllCategoriesBySite(configuration: Configuration, site:String) : Future[List[Category]]
+  def getAllCategoriesBySite(site:String) : Future[List[Category]]
 }

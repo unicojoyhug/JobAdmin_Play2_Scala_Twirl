@@ -10,9 +10,9 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CategoryServiceImpl @Inject()(ws: WSClient, site: String) extends CategoryService {
+class CategoryServiceImpl @Inject()(ws: WSClient, configuration: Configuration, site: String) extends CategoryService {
 
-  override def getAllCategoriesBySite(configuration: Configuration, site: String): Future[List[Category]] = {
+  override def getAllCategoriesBySite(site: String): Future[List[Category]] = {
 
     val url: String = configuration.get[String]("job_api.url")
     val api_key: String = configuration.get[String]("security.apikeys")
