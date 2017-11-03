@@ -12,12 +12,12 @@ import models.Site
 
 
 @Singleton
-class SiteController @Inject()(cc: ControllerComponents, ws: WSClient, siteService: SiteService, config: Configuration)
+class SiteController @Inject()(cc: ControllerComponents, siteService: SiteService)
   extends AbstractController(cc){
 
 
   def getAllSites = Action.async {
-    val lists : scala.concurrent.Future[List[Site]] = siteService.getAllSites(config)
+    val lists : scala.concurrent.Future[List[Site]] = siteService.getAllSites()
     lists map {
       list =>  Ok(views.html.sites( siteService.getMsg(), list))
     }
