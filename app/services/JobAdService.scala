@@ -10,6 +10,6 @@ trait JobAdService {
 
   def getAllJobAdViews (site: String): Future[List[JobAdView]]
 
-  //def createJobAd(jobAdView: JobAdView, site: String) : Future[Int]
+  def createJobAd(jobAdView: JobAdView) : Future[Int]
 
 }

@@ -19,7 +19,7 @@ class SiteController @Inject()(cc: ControllerComponents, siteService: SiteServic
   def getAllSites = Action.async {
     val lists : scala.concurrent.Future[List[Site]] = siteService.getAllSites()
     lists map {
-      list =>  Ok(views.html.sites( siteService.getMsg(), list))
+      list =>  Ok(views.html.sites(siteService.getMsg(), list))
     }
   }
 

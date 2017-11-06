@@ -1,6 +1,6 @@
+import models.JobAdView
 import org.scalatest.BeforeAndAfter
 import org.scalatestplus.play.PlaySpec
-
 import play.api.mvc.Results
 import services.JobAdService
 
@@ -9,6 +9,16 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
 class JobAdServiceIS extends PlaySpec with Results with BeforeAndAfter with IntegrationAppBuilder{
   val sut = injector.instanceOf[JobAdService]
+
+
+  val jobAdView = new JobAdView()
+  jobAdView.title = "TestJob"
+  jobAdView.externallink = "Test External link"
+  jobAdView.startdate = 1509954397228l
+  jobAdView.enddate = 1509954397228l
+  jobAdView.site_id = 1
+  jobAdView.company_id = 1
+  jobAdView.allow_personalized = false
 
   "#getAllJobs" should {
     "return 0 jobs" in {
@@ -19,4 +29,16 @@ class JobAdServiceIS extends PlaySpec with Results with BeforeAndAfter with Inte
       }
     }
   }
+
+  "#createJob" should {
+    "return jobId" in {
+      val result = sut.createJobAd(jobAdView)
+      val id = Await.result(result, Duration(10, SECONDS))
+
+      withClue("New Job Id from API should be: "){
+        id mustBe 2495
+      }
+    }
+  }
+
 }
