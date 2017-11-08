@@ -16,13 +16,9 @@
     <body>
         @* And here's where we render the `Html` object containing
          * the page content. *@
-    <section id="top">
-        <div class="wrapper">
-            <h1 class="main-title">@title</h1>
-        </div>
-    </section>
+        @navbar()
 
-        <section class="content">@content</section>
+        @content
 
         @scripts()
     </body>

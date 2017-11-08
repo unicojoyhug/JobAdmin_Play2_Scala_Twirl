@@ -2,7 +2,7 @@ package services
 
 import javax.inject.Inject
 
-import models.{Category, Company, JobAd, JobAdView}
+import models._
 import org.joda.time.DateTime
 import play.api.Configuration
 import play.api.libs.json._
@@ -13,7 +13,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, categoryService: CategoryService, configuration: Configuration ) extends JobAdService {
+class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, categoryService: CategoryService, siteService: SiteService, configuration: Configuration ) extends JobAdService {
   val api_key: String = configuration.get[String]("security.apikeys")
   val url: String = configuration.get[String]("job_api.url")
   val admin: String = configuration.get[String]("admin")
@@ -38,7 +38,8 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
       r1 <- getAllJobs(site)
       r2 <- companyService.getAllCompanies()
       r3 <- categoryService.getAllCategoriesBySite(site)
-    } yield convertDomainToViewModel(r1, r2, r3)
+      r4 <- siteService.getAllSites()
+    } yield convertDomainToViewModel(r1, r2, r3, r4)
 
   }
 
@@ -80,13 +81,12 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
 
 
-  def convertDomainToViewModel(jobAdsResult: List[JobAd], companiesResult: List[Company], categoriesResult: List[Category]): List[JobAdView] = {
+  def convertDomainToViewModel(jobAdsResult: List[JobAd], companiesResult: List[Company], categoriesResult: List[Category], siteResult: List[Site]): List[JobAdView] = {
     var jobAdViewList = ListBuffer[JobAdView]()
 
     for (jobAd <- jobAdsResult){
       val jobAdView = new JobAdView()
-
-      jobAdView.id = jobAd.id
+      jobAdView.id = jobAd.id.getOrElse(-1)
       jobAdView.title = jobAd.title
       jobAdView.logo = jobAd.logo
       jobAdView.category_id = Some(jobAd.category_id.getOrElse(-1))
@@ -106,6 +106,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
       jobAdView.externallink = jobAd.externallink
       jobAdView.site_id = jobAd.site_id
+      jobAdView.site_name = siteResult.find(s => s.id == jobAd.site_id).get.name
 
       jobAdView.startdate = jobAd.startdate
       jobAdView.enddate = jobAd.enddate
@@ -117,4 +118,10 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
   }
 
+  override def deleteJobAd(jobAdId: Int):Future[String] = {
+    val futureResponse = ws.url(s"$url/jobs/$jobAdId").addHttpHeaders("X-API-KEY" -> api_key).delete().map {
+      result => (result.json \ "Status").as[String]
+    }
+    return futureResponse
+  }
 }

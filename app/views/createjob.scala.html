@@ -1,0 +1,34 @@
+@(form: Form[models.JobAdForm], site: String, id: Int, companyList: List[Company], categoryList: List[Category])(implicit messages: Messages)
+
+<h2>Opret Job til @site</h2>
+
+@helper.form(action = routes.JobController.createJobAd(id)){
+
+    @helper.inputText(form("title"), '_label ->"Title", '_help -> "")
+    @helper.inputDate(form("startdate"),'_class-> "", '_label -> "Start dato", '_help -> "")
+    @helper.inputDate(form("enddate"), '_label -> "Slut dato", '_help -> "")
+    @helper.select(form("jobtype")
+        , options = Seq("Basis" -> "Basis",
+                        "Basis Plus" ->"Basis Plus",
+                        "Recommended" ->"Recommended"), '_label -> "Job type", '_help -> "")
+    @helper.select(form("company_id"),
+        options = companyList.map (company => company.id.toString -> company.name ), '_label -> "Virksomhed",
+        '_default -> "Vælg virksomhed", '_help -> "")
+    @helper.select(form("category_id"), options = categoryList.map(category => category.id.toString -> category.name), '_label -> "Kategori",
+        '_default -> "Vælg kategori", '_help -> "")
+
+    @helper.inputText(form("externallink"), '_label ->"Ekternt link", '_help -> "")
+    <input type="submit">
+
+}
+
+@helper.form(action = routes.FileUploadController.upload, 'enctype -> "multipart/form-data") {
+<div class ="form-group">
+    <p>
+        <input type="file" name="picture">
+        <input type="submit">
+    </p>
+</div>
+
+
+}

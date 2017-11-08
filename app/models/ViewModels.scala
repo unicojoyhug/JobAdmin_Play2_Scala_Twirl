@@ -8,7 +8,7 @@ import play.api.data.Forms._
 case class SiteView(id: Int, name: String, locale: String)
 
 class JobAdView {
-  var id: Option[Int] = None
+  var id: Int = _
   var title: String = _
   var logo: Option[String] = None
   var premium: Option[Boolean] = None
@@ -19,25 +19,27 @@ class JobAdView {
   var category_id: Option[Int] = None
   var category_name: Option[String] = None
   var site_id: Int = _
+  var site_name: String = _
   var company_id: Int = _
   var company_name: String = _
 }
 
-case class JobAdForm (title: String, premium: Boolean, allow_personalized: Boolean, externallink:String,
+case class JobAdForm (title: String, jobtype: String, externallink:String,
                       startdate: Long, enddate: Long,
-                      category_name: String, company_name: String)
+                      category_id: Option[Int] = None, company_id: Int,
+                      site_id: Int)
 
 object JobAdForm{
   val createJobAdForm = Form (
     mapping(
       "title" -> nonEmptyText,
-      "premium" -> boolean,
-      "allow_personalized" -> boolean,
+      "jobtype" -> nonEmptyText,
       "externallink" -> text,
       "startdate" -> longNumber,
       "enddate" -> longNumber,
-      "category_name" -> text,
-      "company_name" -> text
+      "category_id" -> optional(number),
+      "company_id" -> number,
+      "site_id" -> number
     )(JobAdForm.apply)(JobAdForm.unapply)
   )
 }

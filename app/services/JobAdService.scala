@@ -12,4 +12,6 @@ trait JobAdService {
 
   def createJobAd(jobAdView: JobAdView) : Future[Int]
 
+  def deleteJobAd(jobAdId: Int) : Future[String]
+
 }

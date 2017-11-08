@@ -16,7 +16,7 @@ class JobAdServiceIS extends PlaySpec with Results with BeforeAndAfter with Inte
   jobAdView.externallink = "Test External link"
   jobAdView.startdate = 1509954397228l
   jobAdView.enddate = 1509954397228l
-  jobAdView.site_id = 1
+  jobAdView.site_id = 12
   jobAdView.company_id = 1
   jobAdView.allow_personalized = false
 
@@ -37,6 +37,17 @@ class JobAdServiceIS extends PlaySpec with Results with BeforeAndAfter with Inte
 
       withClue("New Job Id from API should be: "){
         id mustBe 2495
+      }
+    }
+  }
+
+  "#deleteJob" should {
+    "return Ok" in {
+      val result = sut.deleteJobAd(2500)
+      val status = Await.result(result, Duration(10, SECONDS))
+
+      withClue("Response should be true: "){
+        status mustBe "Ok"
       }
     }
   }

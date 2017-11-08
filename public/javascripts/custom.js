@@ -6,12 +6,19 @@ var site = {
 
     getSite: function () {
         var name = "finanswatch.dk";
+        var id = 1
         $('#jobIframe').attr("src", "jobs/"+name);
+        $('#newjob').attr("href", "/jobs/newJob/"+name+ "/" + id);
+        $('#addJobBtn').attr("href", "/jobs/newJob/"+name+ "/" + id);
 
         $('#site').change(function () {
              name = $(this).find("option:selected").text().trim();
+             id = $(this).find("option:selected").val()
             $('#jobIframe').attr("src", "jobs/"+name);
-      });
+            $('#newjob').attr("href", "/jobs/newJob/"+name+ "/" + id);
+            $('#addJobBtn').attr("href", "/jobs/newJob/"+name+ "/" + id);
+
+        });
 
     },
 
@@ -30,7 +37,8 @@ var site = {
                     "previous": "Før",
                     "last":"Sidst"
                 }
-            }
+            },
+            "lengthMenu": [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "All"] ]
         });
     }
 
