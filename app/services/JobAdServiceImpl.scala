@@ -60,7 +60,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
     implicit val format = Json.writes[JobAd]
 
     var jobAd = new JobAd(
-      None,
+      Option(jobAdView.id),
       jobAdView.title,
       jobAdView.logo,
       admin,
@@ -123,5 +123,19 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
       result => (result.json \ "Status").as[String]
     }
     return futureResponse
+  }
+
+  override def editJobAd(jobAdView: JobAdView): Future[Int] = {
+    var jobAd = convertJobAdViewToJsValue(jobAdView)
+
+    val futureResponse = ws.url(s"$url/jobs").addHttpHeaders("X-API-KEY" -> api_key).put(jobAd).map {
+      result => (result.json \ "job_id").as[Int]
+    }
+
+    return futureResponse
+  }
+
+  override def getJobAdById(jobAdId: Int): Future[JobAdView] = {
+
   }
 }

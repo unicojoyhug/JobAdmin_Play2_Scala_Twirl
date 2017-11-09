@@ -1,10 +1,16 @@
+@import helper._
+
 @(form: Form[models.JobAdForm], site: String, id: Int, companyList: List[Company], categoryList: List[Category])(implicit messages: Messages)
 
+@main("Job Admin") {
+
 <h2>Opret Job til @site</h2>
+    <div class="container jumbotron">
 
 @helper.form(action = routes.JobController.createJobAd(id)){
-
-    @helper.inputText(form("title"), '_label ->"Title", '_help -> "")
+    <div class="form-group">
+        @helper.inputText(form("title"), '_help->"")
+    </div>
     @helper.inputDate(form("startdate"),'_class-> "", '_label -> "Start dato", '_help -> "")
     @helper.inputDate(form("enddate"), '_label -> "Slut dato", '_help -> "")
     @helper.select(form("jobtype")
@@ -23,13 +29,5 @@
 
 }
 
-@helper.form(action = routes.FileUploadController.upload, 'enctype -> "multipart/form-data") {
-<div class ="form-group">
-    <p>
-        <input type="file" name="picture">
-        <input type="submit">
-    </p>
 </div>
-
-
 }

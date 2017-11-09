@@ -1,6 +1,8 @@
 name := "job_admin_twirl"
  
-version := "1.0" 
+version := "1.0-SNAPSHOT"
+maintainer := "Juyoung Choi"
+dockerExposedPorts in Docker := Seq(8080, 8999)
       
 lazy val `job_admin_twirl` = (project in file(".")).enablePlugins(PlayScala)
 

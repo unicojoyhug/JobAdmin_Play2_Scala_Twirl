@@ -2,15 +2,22 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import models.JobAd
+import play.filters.csrf.CSRF
+
 //import play.api.mvc.{AbstractController, ControllerComponents}
 import play.api._
 import play.api.mvc._
-
+import play.api.data._
+import play.api.data.Forms._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
 import services.{CategoryService, CompanyService, JobAdService}
 import models.{JobAdForm, JobAdView}
 import play.api.libs.json.Writes
 import play.api.libs.ws.{EmptyBody, WSClient}
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 @Singleton
 class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdService, categoryService: CategoryService, companyService: CompanyService)
@@ -31,42 +38,49 @@ class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdServi
     for {
         r1 <-categoryService.getAllCategoriesBySite(site)
         r2 <-companyService.getAllCompanies()
-    }yield ( Ok(views.html.createjob(JobAdForm.createJobAdForm, site, id, r2, r1)))
+   // }yield ( Ok(views.html.createjob(JobAdForm.createJobAdForm, site, id, r2, r1)))
+     }yield ( Ok(views.html.createjob2(site, id, r2, r1)))
+    //}yield ( Ok(views.html.createjob3()))
 
   }
 
 
-  def createJobAd(siteId: Int) = Action.async {
-    implicit request => {
-      val newJobAd = new JobAdView()
+  def createJobAd(siteId: Int) = Action.async{
+    request =>
+      val param = request.body.asFormUrlEncoded
+      var jobAdView = new JobAdView()
+      jobAdView.title = param.get("title")(0)
 
-      JobAdForm.createJobAdForm.bindFromRequest.fold(
-        error => BadRequest("ERROR"),
-        jobAd => {
-          newJobAd.title = jobAd.title
-          if (jobAd.jobtype == "Basis Plus") {
-            newJobAd.premium = Some(true)
-          }
-          if (jobAd.jobtype == "Recommended") {
-            newJobAd.allow_personalized = true
-          }
-          newJobAd.externallink = jobAd.externallink
-          newJobAd.startdate = jobAd.startdate
-          newJobAd.enddate = jobAd.enddate
-          newJobAd.category_id = jobAd.category_id
-          newJobAd.company_id = jobAd.company_id
-          newJobAd.site_id = siteId
+      val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+      jobAdView.startdate = formatter.parseDateTime(param.get("startdate")(0)).getMillis
+      jobAdView.enddate = formatter.parseDateTime(param.get("enddate")(0)).getMillis
 
-        })
-
-      val result: scala.concurrent.Future[Int] = jobAdService.createJobAd(newJobAd)
-
-      result map {
-        list => Redirect(routes.JobController.getAllJobAds("finanswatch.dk"))
+      jobAdView.site_id = siteId
+      jobAdView.externallink = param.get("externallink")(0)
+      jobAdView.company_id = param.get("company_id")(0).toInt
+      jobAdView.category_id = param.get("category_id")(0) match {
+        case id: String => Try(id.toInt) toOption
+        case _ => None
       }
+
+      val jobtype = param.get("jobtype")(0)
+      if(jobtype =="basis_plus"){
+        jobAdView.premium = Option(true)
+      }else if(jobtype =="recommended"){
+        jobAdView.allow_personalized = true
+      }
+
+      val newJobAdId: scala.concurrent.Future[Int] = jobAdService.createJobAd(jobAdView)
+
+      newJobAdId map {
+        id =>
+          Logger.debug("New JobAd id = "+id)
+          Redirect(routes.FileUploadController.upload(id))
+          Redirect(routes.SiteController.getAllSites())
     }
 
   }
+
 
   def deleteJobAd(site: String, id: Int) = Action.async {
 
@@ -78,4 +92,52 @@ class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdServi
     }
   }
 
+  def editIndex(site: String, jobId: Int) = Action.async{
+    implicit request =>
+      for {
+        r1 <-categoryService.getAllCategoriesBySite(site)
+        r2 <-companyService.getAllCompanies()
+        r3 <-jobAdService.
+
+      }yield ( Ok(views.html.editjob(jobAdView, r2, r1)))
+
+  }
+
+  def editJobAd(site: String, siteId: Int, id: Int) = Action.async{
+    request =>
+      val param = request.body.asFormUrlEncoded
+      var jobAdView = new JobAdView()
+
+      jobAdView.id = id
+
+      val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+      jobAdView.startdate = formatter.parseDateTime(param.get("startdate")(0)).getMillis
+      jobAdView.enddate = formatter.parseDateTime(param.get("enddate")(0)).getMillis
+
+      jobAdView.site_id = siteId
+      jobAdView.externallink = param.get("externallink")(0)
+      jobAdView.company_id = param.get("company_id")(0).toInt
+      jobAdView.category_id = param.get("category_id")(0) match {
+        case id: String => Try(id.toInt) toOption
+        case _ => None
+      }
+
+      val jobtype = param.get("jobtype")(0)
+      if(jobtype =="basis_plus"){
+        jobAdView.premium = Option(true)
+      }else if(jobtype =="recommended"){
+        jobAdView.allow_personalized = true
+      }
+
+      val newJobAdId: scala.concurrent.Future[Int] = jobAdService.editJobAd(jobAdView)
+
+      newJobAdId map {
+        id =>
+          Redirect(routes.JobController.getAllJobAds(site))
+      }
+
+  }
+
 }
+
+

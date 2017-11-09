@@ -2,7 +2,10 @@ var site = {
     init: function () {
         site.getSite();
         site.setDataTable();
-        site.setDeleteAlert();
+        site.setDeleteJobAlert();
+        site.setCreateJobAlert();
+        site.setDatePicker();
+        site.validator();
     },
 
     getSite: function () {
@@ -24,7 +27,7 @@ var site = {
     },
 
     setDataTable: function () {
-        $('#joblistTable').DataTable({
+        $('#joblistTable').dataTable({
             "language": {
                 "lengthMenu": "Vis _MENU_ jobs per side",
                 "zeroRecords": "Intet Job findes",
@@ -43,8 +46,8 @@ var site = {
         });
     },
 
-    setDeleteAlert: function () {
-        $('.btn-submit').on('click', function (e) {
+    setDeleteJobAlert: function () {
+        $('.btn-delete-submit').on('click', function (e) {
             e.preventDefault();
             var form = $(this).parents('form');
 
@@ -57,15 +60,54 @@ var site = {
                 dangerMode: true,
             }).then((willDelete) => {
                 if (willDelete) {
-                    form.submit();
                     swal("Jobbet er slettet", {
                         icon: "success",
                     });
+
+                    form.submit();
                 }else {
                     swal("Annulleret", "Jobbet bliver ikke slettet.", "error");
                 }
             });
         });
+    },
+    setCreateJobAlert: function () {
+        $('.btn-create-submit').on('click', function (e) {
+            e.preventDefault();
+            var form = $(this).parents('form');
+
+            swal({
+                title: "Er du sikker?",
+                text: "Jobbet vil blive oprettet.",
+                icon: "warning",
+                buttons: true,
+                buttons: ["Annuller", "Opret"],
+                dangerMode: false,
+            }).then((willCreate) => {
+                if (willCreate) {
+                    swal("Jobbet er oprettet", {
+                        icon: "success",
+                    });
+                    form.submit();
+
+                }else {
+                    swal("Annulleret", "Jobbet bliver ikke oprettet.", "error");
+        }
+        });
+        });
+    },
+
+    setDatePicker: function(){
+        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        $.fn.datepicker.defaults.language = "da";
+        $.fn.datepicker.defaults.calendarWeeks = true;
+        $.fn.datepicker.defaults.todayHighlight = true;
+
+    },
+
+    validator: function(){
+        $("form").bootstrap.valida
+
     }
 }
 

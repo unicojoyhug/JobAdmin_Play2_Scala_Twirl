@@ -38,18 +38,19 @@
                             }
                         }</td>
                         <td>
-                            @defining(DateTimeFormat.forPattern("yyyy-MM-dd")) { dateFormatter =>
+                            @defining(DateTimeFormat.forPattern("dd-MM-yyyy")) { dateFormatter =>
                                 @dateFormatter.print(jobAd.startdate)}
                         </td>
-                        <td> @defining(DateTimeFormat.forPattern("yyyy-MM-dd")) { dateFormatter =>
+                        <td> @defining(DateTimeFormat.forPattern("dd-MM-yyyy")) { dateFormatter =>
                             @dateFormatter.print(jobAd.enddate)}</td>
                         <td class="logo"><img class="companylogo" src=@jobAd.logo alt="N/A"></td>
 
                         <td> @helper.form(action = routes.JobController.deleteJobAd(jobAd.site_name, jobAd.id)){
-                            <button type="submit" class="btn btn-outline-danger btn-submit">Slet</button>
+                            <button type="submit" class="btn btn-outline-danger btn-delete-submit">Slet</button>
                         }</td>
-                        <td><button type="submit" class="btn btn-outline-info">Edit</button></td>
-
+                        <td> @helper.form(action = routes.JobController.editIndex(jobAd)) {
+                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Edit</button>
+                        }</td>
                     </tr>
                 }
             </tbody>

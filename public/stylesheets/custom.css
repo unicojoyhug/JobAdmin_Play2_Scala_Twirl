@@ -1,6 +1,7 @@
 .main-title {
     text-align: center;
     float: none !important;
+    padding: 3%;
 }
 
 .companylogo {
@@ -25,4 +26,8 @@ iframe {
     margin: auto ;
     left: 0;
     border:none;
+}
+
+.with-errors {
+    color: red;
 }

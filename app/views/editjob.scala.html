@@ -1,0 +1,98 @@
+
+@(jobAdView: JobAdView, companyList: List[Company], categoryList: List[Category])(implicit messages: Messages)
+
+@main("Job Admin") {
+    <div class="main-title">
+        <h2>Edit jobbet</h2>
+
+    </div>
+
+    <div class="container jumbotron">
+
+
+        <form data-toggle="validator" role="form" action="@routes.JobController.editJobAd(jobAdView.site_name, jobAdView.site_id, jobAdView.id)" method="put">
+
+            <div class="form-group">
+                <label for="jobtitle">Title</label>
+                <input type="text" class="form-control" data-error="Der mangler title." id="jobtitle" name="title" placeholder="Job title" required>
+                <div class="help-block with-errors"></div>
+            </div>
+            <div class="row">
+
+                <div class="form-group col-md-6">
+                    <label for="startdate">Start dato</label>
+                    <div class="input-group date" data-provide="datepicker">
+
+                        <input type="text" placeholder="dd/mm/yyyy" class="form-control datepicker"  data-error="Der mangler dato." id="startdate" name="startdate" required>
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </div>
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="enddate">Slut dato</label>
+                    <div class="input-group date" data-provide="datepicker">
+
+                        <input type="text" placeholder="dd/mm/yyyy" class="form-control datepicker"  data-error="Der mangler dato." id="enddate" name="enddate" required>
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </div>
+                    </div>
+                    <div class="help-block with-errors"></div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="jobtype">Job type</label>
+
+                <div class ="input-group">
+                    <select class="form-control" id="jobtype" name="jobtype">
+                        <option value="basis"> Basis </option>
+                        <option value="basis_plus"> Basis Plus </option>
+                        <option value="recommended"> Recommended </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="company">Virksomhed</label>
+
+                <div class ="input-group">
+                    <select class="form-control" id="company" name="company_id">
+                        <option selected value="">Vælg virksomhed</option>
+                        @for(company <- companyList) {
+                            <option value="@company.id"> @company.name </option>
+                        }
+                    </select>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="category">Kategori</label>
+                <div class ="input-group">
+                    <select class="form-control" id="category" name="category_id">
+                        <option selected value="">Vælg kategori</option>
+                        @for(category <- categoryList) {
+                            <option value="@category.id"> @category.name </option>
+                        }
+                    </select>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="externallink">Ekternt link</label>
+                <input type="text" class="form-control" id="externallink" name="externallink" placeholder="Ekternt link til job">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-create-submit">Opret job</button>
+            </div>
+
+        </form>
+
+
+    </div>
+
+}
