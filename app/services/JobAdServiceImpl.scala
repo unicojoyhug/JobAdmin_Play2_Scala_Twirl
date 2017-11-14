@@ -134,8 +134,4 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
     return futureResponse
   }
-
-  override def getJobAdById(jobAdId: Int): Future[JobAdView] = {
-
-  }
 }

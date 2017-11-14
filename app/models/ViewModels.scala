@@ -3,6 +3,7 @@ package models
 import org.joda.time.DateTime
 import play.api.data._
 import play.api.data.Forms._
+import play.api.mvc.PathBindable
 
 
 case class SiteView(id: Int, name: String, locale: String)
@@ -23,6 +24,8 @@ class JobAdView {
   var company_id: Int = _
   var company_name: String = _
 }
+
+
 
 case class JobAdForm (title: String, jobtype: String, externallink:String,
                       startdate: Long, enddate: Long,

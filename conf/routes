@@ -23,11 +23,11 @@ GET     /job/newJob/:site/:id          @controllers.JobController.index(site:Str
 + nocsrf
 POST     /job/newJob/:siteId            @controllers.JobController.createJobAd(siteId: Int)
 
-
-GET     /job/editJob/:site/:jobId           @controllers.JobController.editIndex(site:String, jobId: Int)
++ nocsrf
+POST    /job/editJob/:site/:jobId           @controllers.JobController.editIndex(site:String, jobId: Int)
 
 + nocsrf
-PUT     /job/editJob/:site/:siteId/:jobId            @controllers.JobController.editJobAd(site:String, siteId: Int, jobId: Int)
+POST     /job/editJob/:site/:siteId/:jobId            @controllers.JobController.editJobAd(site:String, siteId: Int, jobId: Int)
 
 + nocsrf
 POST    /:jobId                         @controllers.FileUploadController.upload(jobId: Int)

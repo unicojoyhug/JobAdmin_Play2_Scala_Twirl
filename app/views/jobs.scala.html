@@ -18,13 +18,16 @@
                     <th>Startdato</th>
                     <th>Udløbsdato</th>
                     <th>Logo</th>
-                    <th>Slet</th>
                     <th>Edit</th>
+                    <th>Slet</th>
                 </tr>
             </thead>
             <tbody>
                 @for(jobAd <- lists) {
                     <tr>
+
+                        <form target='_parent' action="@routes.JobController.editIndex(jobAd.site_name:String, jobAd.id)" method="post">
+
                         <td>@jobAd.title</td>
                         <td>@jobAd.company_name</td>
                         <td>@jobAd.category_name</td>
@@ -44,12 +47,25 @@
                         <td> @defining(DateTimeFormat.forPattern("dd-MM-yyyy")) { dateFormatter =>
                             @dateFormatter.print(jobAd.enddate)}</td>
                         <td class="logo"><img class="companylogo" src=@jobAd.logo alt="N/A"></td>
+                        <input type="hidden" name="title" value="@jobAd.title" >
+                        <input type="hidden" name="startdate" value="@jobAd.startdate">
+                        <input type="hidden" name="enddate" value="@jobAd.enddate">
+                        <input type="hidden" name="site_id" value="@jobAd.site_id">
+                        <input type="hidden" name="externallink" value="@jobAd.externallink">
+                        <input type="hidden" name="company_id" value="@jobAd.company_id">
+                        <input type="hidden" name="category_id" value="@jobAd.category_id">
+                        <input type="hidden" name="premium" value="@jobAd.premium">
+                        <input type="hidden" name="allow_personalized" value="@jobAd.allow_personalized">
+                            <input type="hidden" name="logo" value="@jobAd.logo">
+
+                        <td>
+                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Edit</button>
+                        </td>
+                        </form>
+
 
                         <td> @helper.form(action = routes.JobController.deleteJobAd(jobAd.site_name, jobAd.id)){
                             <button type="submit" class="btn btn-outline-danger btn-delete-submit">Slet</button>
-                        }</td>
-                        <td> @helper.form(action = routes.JobController.editIndex(jobAd)) {
-                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Edit</button>
                         }</td>
                     </tr>
                 }

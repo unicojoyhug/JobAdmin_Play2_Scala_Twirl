@@ -94,11 +94,37 @@ class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdServi
 
   def editIndex(site: String, jobId: Int) = Action.async{
     implicit request =>
+      val param = request.body.asFormUrlEncoded
+      var jobAdView = new JobAdView()
+
+      jobAdView.id = jobId
+      jobAdView.title = param.get("title")(0)
+      jobAdView.logo = param.get("logo")(0) match {
+        case id: String => Try(id.toString) toOption
+        case _ => None
+      }
+
+      jobAdView.startdate = param.get("startdate")(0).filterNot((x: Char) => x.isWhitespace).toLong
+      jobAdView.enddate = param.get("enddate")(0).filterNot((x: Char) => x.isWhitespace).toLong
+
+      jobAdView.site_id = param.get("site_id")(0).toInt
+      jobAdView.site_name = site
+      jobAdView.externallink = param.get("externallink")(0)
+      jobAdView.company_id = param.get("company_id")(0).toInt
+      jobAdView.category_id = param.get("category_id")(0) match {
+        case id: String => Try(id.toInt) toOption
+        case _ => None
+      }
+
+      jobAdView.premium = param.get("premium")(0) match {
+        case s: String => Try(s.toBoolean) toOption
+        case _ => None
+      }
+      jobAdView.allow_personalized = param.get("allow_personalized")(0).toBoolean
+
       for {
         r1 <-categoryService.getAllCategoriesBySite(site)
         r2 <-companyService.getAllCompanies()
-        r3 <-jobAdService.
-
       }yield ( Ok(views.html.editjob(jobAdView, r2, r1)))
 
   }
@@ -109,10 +135,15 @@ class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdServi
       var jobAdView = new JobAdView()
 
       jobAdView.id = id
+      jobAdView.title = param.get("title")(0)
+      jobAdView.logo = param.get("logo")(0) match {
+        case id: String => Try(id.toString) toOption
+        case _ => None
+      }
 
       val formatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-      jobAdView.startdate = formatter.parseDateTime(param.get("startdate")(0)).getMillis
-      jobAdView.enddate = formatter.parseDateTime(param.get("enddate")(0)).getMillis
+      jobAdView.startdate = formatter.parseDateTime(param.get("startdate")(0).filterNot((x: Char) => x.isWhitespace)).getMillis
+      jobAdView.enddate = formatter.parseDateTime(param.get("enddate")(0).filterNot((x: Char) => x.isWhitespace)).getMillis
 
       jobAdView.site_id = siteId
       jobAdView.externallink = param.get("externallink")(0)
@@ -133,7 +164,7 @@ class JobController @Inject()(cc: ControllerComponents, jobAdService: JobAdServi
 
       newJobAdId map {
         id =>
-          Redirect(routes.JobController.getAllJobAds(site))
+          Redirect(routes.SiteController.getAllSites())
       }
 
   }
