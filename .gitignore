@@ -15,4 +15,4 @@ dist
 /.settings
 .env
 hs_err_pid21746.log
-.conf
+conf/application.conf

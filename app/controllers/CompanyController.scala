@@ -18,5 +18,5 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
       list =>  Ok(views.html.companys( list))
     }
   }
-  
+
 }
