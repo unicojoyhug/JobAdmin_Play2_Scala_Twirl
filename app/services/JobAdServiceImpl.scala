@@ -98,7 +98,8 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
       }
 
       jobAdView.company_id = jobAd.company_id
-      jobAdView.company_name = companiesResult.find(c => c.id == jobAd.company_id).get.name
+
+      jobAdView.company_name = companiesResult.find(c => c.id.getOrElse(-1) == jobAd.company_id).get.name
 
       //TODO: Need to check if they are needed
       jobAdView.premium = jobAd.premium

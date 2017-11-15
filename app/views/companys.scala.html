@@ -1,0 +1,33 @@
+@import org.joda.time.format.DateTimeFormat
+@(lists : List[CompanyView])
+
+
+@main("Virksomhed") {
+    <div id="wrap">
+        <div class="container">
+            <table id="companyListTable" class="table table-striped table-bordered .table-hover " cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Storkundeaftale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(company <- lists) {
+                    <tr>
+
+                            <td>@company.name</td>
+                        @if(company.specialAgreement){
+                            <td>Ja</td>
+                        }else{
+                            <td>Nej</td>
+                        }
+
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

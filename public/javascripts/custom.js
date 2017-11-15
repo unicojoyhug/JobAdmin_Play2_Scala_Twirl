@@ -44,6 +44,24 @@ var site = {
             },
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]]
         });
+        $('#companyListTable').dataTable({
+            "language": {
+                "lengthMenu": "Vis _MENU_ virksomheder per side",
+                "zeroRecords": "Intet virksomhed findes",
+                "info": " Siden _PAGE_ af _PAGES_",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(valgt fra _MAX_ total virksomheder)",
+                "search": "Søg",
+                "paginate": {
+                    "first": "Først side",
+                    "next": "Næste",
+                    "previous": "Før",
+                    "last": "Sidst"
+                }
+            },
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+
     },
 
     setDeleteJobAlert: function () {

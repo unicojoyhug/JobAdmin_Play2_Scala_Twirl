@@ -31,3 +31,5 @@ POST     /job/editJob/:site/:siteId/:jobId            @controllers.JobController
 
 + nocsrf
 POST    /:jobId                         @controllers.FileUploadController.upload(jobId: Int)
+
+GET     /company                        @controllers.CompanyController.getAllCompanyViews

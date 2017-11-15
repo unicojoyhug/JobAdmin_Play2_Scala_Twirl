@@ -21,6 +21,8 @@ class Module extends AbstractModule {
     bind(classOf[JobAdService]).to(classOf[JobAdServiceImpl])
     bind(classOf[CompanyService]).to(classOf[CompanyServiceImpl])
     bind(classOf[CategoryService]).to(classOf[CategoryServiceImpl])
+    bind(classOf[SpecialAgreementService]).to(classOf[SpecialAgreementServiceImpl])
+
 
   }
 
