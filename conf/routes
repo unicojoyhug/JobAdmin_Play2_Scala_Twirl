@@ -22,6 +22,8 @@ GET     /job/newJob/:site/:id          @controllers.JobController.index(site:Str
 
 + nocsrf
 POST     /job/newJob/:siteId            @controllers.JobController.createJobAd(siteId: Int)
+#POST     /job/newJob/:siteId            @controllers.JobController.createJobAdWithFile(siteId: Int)
+
 
 + nocsrf
 POST    /job/editJob/:site/:jobId           @controllers.JobController.editIndex(site:String, jobId: Int)
@@ -30,6 +32,8 @@ POST    /job/editJob/:site/:jobId           @controllers.JobController.editIndex
 POST     /job/editJob/:site/:siteId/:jobId            @controllers.JobController.editJobAd(site:String, siteId: Int, jobId: Int)
 
 + nocsrf
-POST    /:jobId                         @controllers.FileUploadController.upload(jobId: Int)
+#POST    /upload/:caseName/:key/:id                       @controllers.FileUploadController.upload(caseName: String, key:String, id:Int)
+POST    /upload                       @controllers.FileUploadController.upload()
+#POST    /upload/:caseName/:key                      @controllers.FileUploadController.upload(caseName: String, key:String)
 
 GET     /company                        @controllers.CompanyController.getAllCompanyViews

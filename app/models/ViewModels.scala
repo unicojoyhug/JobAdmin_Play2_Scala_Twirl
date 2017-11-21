@@ -12,7 +12,7 @@ class JobAdView {
   var logo: Option[String] = None
   var premium: Option[Boolean] = None
   var allow_personalized: Boolean = _
-  var externallink: String = _
+  var externallink: Option[String] = None
   var startdate: Long = _
   var enddate: Long = _
   var category_id: Option[Int] = None

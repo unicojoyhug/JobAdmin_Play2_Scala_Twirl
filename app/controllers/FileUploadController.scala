@@ -13,11 +13,12 @@ import play.api.libs.ws.WSClient
 import play.api.mvc.MultipartFormData.{DataPart, FilePart}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import play.core.parsers.Multipart.FileInfo
+import services.FileService
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
 
-class FileUploadController @Inject()(cc: ControllerComponents, configuration: Configuration, ws: WSClient)(implicit executionContext: ExecutionContext)
+class FileUploadController @Inject()(cc: ControllerComponents, configuration: Configuration, ws: WSClient, fileService: FileService)(implicit executionContext: ExecutionContext)
   extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val api_key: String = configuration.get[String]("security.apikeys")
@@ -63,88 +64,52 @@ class FileUploadController @Inject()(cc: ControllerComponents, configuration: Co
     *
     * @return
     */
-  def upload(id: Int) = Action(parse.multipartFormData(handleFilePartAsFile)) { implicit request =>
-    val fileOption = request.body.file("picture").map {
+  def upload() = Action(parse.multipartFormData(handleFilePartAsFile)) { implicit request =>
+    //def upload(caseName: String, key: String) = Action(parse.multipartFormData(handleFilePartAsFile)) { implicit request =>
+    //def upload(caseName: String, key: String, id: Int) = Action(parse.multipartFormData(handleFilePartAsFile)) { implicit request =>
+
+    val caseName = "jobs"
+    val key ="pdf"
+    val id = 2576
+
+    logger.info(s"caseName = ${caseName}")
+
+    fileService.uploadFile(request.body.file(key), id, caseName)
+
+    Ok("Done")
+
+
+   /* val fileOption = request.body.file(key).map {
       case FilePart(key, filename, contentType, file) =>
         logger.info(s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
 
+        ///v1/admin/companies/image/:id
+        ///v1/admin/jobs/pdf/:id
+        ///v1/admin/jobs/image/:id
 
-        val fileupload = ws.url(s"$url/jobs/pdf/2503").addHttpHeaders("X-API-KEY" -> api_key)
-          .post(Source(FilePart(filename, "pdf", Option("application/pdf") , FileIO.fromPath(file.toPath)) :: DataPart("key", "value") :: List()))
-        val result = Await.result(fileupload, Duration(10, SECONDS))
+        val fileupload = ws.url(s"$url/$caseName/$key/$id").addHttpHeaders("X-API-KEY" -> api_key)
+          .post(Source(FilePart(key, s"${filename}", Option(s"${contentType}") , FileIO.fromPath(file.toPath)) :: DataPart("key", "value") :: List()))
 
-        result match {
-          case x if 200 until 299 contains x.status.intValue => Ok("File uploaded")
+        fileupload map {
+          result => result match {
+            case x if 200 until 299 contains x.status.intValue => println("File uploaded")
 
-          case resultCode =>
-            println("#########################")
-            println(s"File not uploaded" + resultCode)
-            println("#########################")
-            Ok("File failed")
+            case resultCode =>
+              println("#########################")
+              println(s"File not uploaded : " + resultCode)
+              println("#########################")
+              println("File failed")
+
+          }
+            val data = operateOnTempFile(file)
+
+            println("DONE fileupload map")
 
         }
 
-
-        val data = operateOnTempFile(file)
-        data
     }
+    Ok(s"file size = ${fileOption.getOrElse("no file")}")*/
 
-    Ok(s"file size = ${fileOption.getOrElse("no file")}")
   }
 
-
-
-  /*def uploadPdf() = Action(parse.multipartFormData) { request =>
-    request.body.file("picture").map { file =>
-      val filename = file.filename
-      val contentType = file.contentType
-      file.ref.moveTo(Paths.get(s"/tmp/picture/$filename"), replace = true)
-
-      val futureResponse = ws.url(s"$url/jobs/pdf/2495").addHttpHeaders("X-API-KEY" -> api_key).post(file)
-
-          Ok("File uploaded")
-      }.getOrElse {
-        Redirect(routes.JobController.index("finanswatch.dk")).flashing(
-          "error" -> "Missing file")
-      }
-    }
-  }*/
-
-/*  def upload = Action(parse.multipartFormData) { request =>
-      request.body.file("picture").map { picture =>
-      import java.io.File
-        println("Something")
-
-      val filename = picture.filename
-      val contentType = picture.contentType
-        println("file : " + filename)
-        println("file type : " + contentType)
-        println("file ref : " + picture.ref)
-
-        picture.ref.moveTo(new File(s"/testupload/$filename"))
-
-        //picture.ref.moveTo(Paths.get(s"/testupload/$filename"), replace = true)
-
-      val fileupload = ws.url(s"$url/jobs/pdf/2503").addHttpHeaders("X-API-KEY" -> api_key)
-        .post(Source(FilePart(filename, "pdf", Option("multipart/form-data"), FileIO.fromPath(picture.ref)) :: DataPart("key", "value") :: List()))
-      val result = Await.result(fileupload, Duration(10, SECONDS))
-
-      result match {
-        case x if 200 until 299 contains x.status.intValue => Ok("File uploaded")
-
-        case resultCode =>
-        println("#########################")
-        println(s"File not uploaded successfully " + resultCode)
-        println("#########################")
-          Ok("File failed")
-
-      }
-
-
-
-    }.getOrElse {
-      Redirect(routes.JobController.index("finanswatch.dk", 1)).flashing(
-        "error" -> "Missing file")
-    }
-  }*/
 }

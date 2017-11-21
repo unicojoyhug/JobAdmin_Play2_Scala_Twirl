@@ -65,7 +65,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
       jobAdView.logo,
       admin,
       jobAdView.premium,
-      jobAdView.externallink,
+      jobAdView.externallink.getOrElse(""),
       jobAdView.startdate,
       jobAdView.enddate,
       DateTime.now().getMillis,
@@ -105,7 +105,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
       jobAdView.premium = jobAd.premium
       jobAdView.allow_personalized = jobAd.allow_personalized
 
-      jobAdView.externallink = jobAd.externallink
+      jobAdView.externallink = Option(jobAd.externallink)
       jobAdView.site_id = jobAd.site_id
       jobAdView.site_name = siteResult.find(s => s.id == jobAd.site_id).get.name
 

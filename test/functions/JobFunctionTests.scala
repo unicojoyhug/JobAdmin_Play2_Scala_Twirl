@@ -22,7 +22,7 @@ class JobFunctionTests extends PlaySpec with Results with BeforeAndAfter with In
 
       val jobAdView = new JobAdView()
       jobAdView.title = "TestJob"
-      jobAdView.externallink = "Test External link"
+      jobAdView.externallink = Some("Test External link")
       jobAdView.startdate = 1509954397228l
       jobAdView.enddate = 1509954397228l
       jobAdView.site_id = 1
@@ -38,7 +38,7 @@ class JobFunctionTests extends PlaySpec with Results with BeforeAndAfter with In
           jobAdView.logo,
           "Juyoung Choi",
           jobAdView.premium,
-          jobAdView.externallink,
+          jobAdView.externallink.getOrElse(""),
           jobAdView.startdate,
           jobAdView.enddate,
           DateTime.now().getMillis,
@@ -103,7 +103,7 @@ class JobFunctionTests extends PlaySpec with Results with BeforeAndAfter with In
         jobAdView.logo,
         "Juyoung Choi",
         jobAdView.premium,
-        jobAdView.externallink,
+        jobAdView.externallink.getOrElse(""),
         jobAdView.startdate,
         jobAdView.enddate,
         1509955566687l,
@@ -122,7 +122,7 @@ class JobFunctionTests extends PlaySpec with Results with BeforeAndAfter with In
     "#convertJobAdToJson" in {
       val jobAdView = new JobAdView()
       jobAdView.title = "TestJob"
-      jobAdView.externallink = "Test External link"
+      jobAdView.externallink = Some("Test External link")
       jobAdView.startdate = 1509954397228l
       jobAdView.enddate = 1509954397228l
       jobAdView.site_id = 1

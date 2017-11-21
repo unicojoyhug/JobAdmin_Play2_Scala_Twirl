@@ -1,5 +1,5 @@
 @import org.joda.time.format.DateTimeFormat
-@(jobAdView: JobAdView, companyList: List[Company], categoryList: List[Category])(implicit messages: Messages)
+@(jobAdView: JobAdView, categoryList: List[Category])(implicit messages: Messages)
 
 @main("Job Admin") {
     <div class="main-title">
@@ -10,8 +10,12 @@
     <div class="container jumbotron">
 
 
-        <form data-toggle="validator" role="form" action="@routes.JobController.editJobAd(jobAdView.site_name, jobAdView.site_id, jobAdView.id)" method="post" >
+        <form data-toggle="validator" role="form" action="@routes.JobController.editJobAd(jobAdView.site_name, jobAdView.site_id, jobAdView.id)" method="post" enctype="multipart/form-data" >
             <input type="hidden" name="logo" value="@jobAdView.logo">
+            <input type="hidden" name="company_id" value="@jobAdView.company_id">
+            <div class="form-group">
+                <label for="company">Virksomhed : @jobAdView.company_name</label>
+            </div>
 
             <div class="form-group">
                 <label for="jobtitle">Title</label>
@@ -72,24 +76,7 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="company">Virksomhed</label>
 
-                <div class ="input-group">
-                    <select class="form-control" id="company" name="company_id">
-                        <option selected value="">Vælg virksomhed</option>
-                        @for(company <- companyList) {
-                            @if(company.id == jobAdView.company_id){
-                                <option value="@company.id" selected="selected"> @company.name </option>
-
-                            }else{
-                                <option value="@company.id"> @company.name </option>
-                            }
-                        }
-                    </select>
-
-                </div>
-            </div>
             <div class="form-group">
                 <label for="category">Kategori</label>
                 <div class ="input-group">
@@ -106,10 +93,19 @@
 
                 </div>
             </div>
-            <div class="form-group">
-                <label for="externallink">Ekternt link</label>
+
+            <div class="radio">
+
+                <label>
+                    <input type="radio" name="joblogo" id="radio_externallink" value="link" checked="checked" > Eksternt link </label>
                 <input type="text" class="form-control" id="externallink" name="externallink" value="@jobAdView.externallink">
             </div>
+
+            <div class="radio">
+                <label>
+                    <input type="radio" name="joblogo" id="raido_pdf" value="pdf"> PDF file </label>
+            </div>
+            <input type="file" name="pdf" id="pdf">
 
             <div class="form-group">
                 <button type="submit" class="btn btn-success btn-create-submit">Gem job</button>
@@ -117,14 +113,6 @@
 
         </form>
 
-
     </div>
-
-    <script>
-        function parseDate(date) {
-
-
-        }
-    </script>
 
 }

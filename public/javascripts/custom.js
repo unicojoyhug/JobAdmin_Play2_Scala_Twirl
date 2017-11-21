@@ -124,10 +124,26 @@ var site = {
     },
 
     validator: function(){
-        $("form").bootstrap.valida
+        $("form").bootstrap.validator()
 
     }
 }
 
 
 $(site.init);
+
+$("#radio_externallink").click(
+    function() {
+        $("#externallink").prop("disabled", false);
+        $("#pdf").prop("disabled", true);
+        $("#pdf").val('');
+
+    });
+$("#raido_pdf").click(
+    function() {
+        $("#externallink").val('');
+        $("#externallink").prop("disabled", true);
+        $("#pdf").prop("disabled", false);
+        $("#pdf").click();
+
+    });
