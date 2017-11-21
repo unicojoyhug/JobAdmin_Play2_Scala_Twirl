@@ -50,31 +50,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   }
 
 
-  type FilePartHandler[A] = FileInfo => Accumulator[ByteString, FilePart[A]]
-
-  /**
-    * Uses a custom FilePartHandler to return a type of "File" rather than
-    * using Play's TemporaryFile class.  Deletion must happen explicitly on
-    * completion, rather than TemporaryFile (which uses finalization to
-    * delete temporary files).
-    *
-    * @return
-    */
-  private def handleFilePartAsFile: FilePartHandler[File] = {
-    case FileInfo(partName, filename, contentType) =>
-      val path: Path = Files.createTempFile("multipartBody", "tempFile")
-      val fileSink: Sink[ByteString, Future[IOResult]] = FileIO.toPath(path)
-      val accumulator: Accumulator[ByteString, IOResult] = Accumulator(fileSink)
-      accumulator.map {
-        case IOResult(count, status) =>
-          Logger.info(s"count = $count, status = $status")
-          FilePart(partName, filename, contentType, path.toFile)
-      }
-  }
-
-
-
-  def createJobAd(siteId: Int) = Action(parse.multipartFormData(handleFilePartAsFile)) { implicit request =>
+  def createJobAd(siteId: Int) = Action(parse.multipartFormData(fileService.handleFilePartAsFile)) { implicit request =>
 
     val param = request.body.asFormUrlEncoded
 
@@ -124,7 +100,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
 
   }
 
-  def editJobAd(site: String, siteId: Int, id: Int) = Action(parse.multipartFormData(handleFilePartAsFile)) {
+  def editJobAd(site: String, siteId: Int, id: Int) = Action(parse.multipartFormData(fileService.handleFilePartAsFile)) {
     implicit request =>
       val param = request.body.asFormUrlEncoded
       var jobAdView = getCommonDataFromView(Some(param), caseName = "jobAd", param.size, fileCheck = true)
@@ -192,6 +168,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
           case s: String => Try(s.toBoolean) toOption
           case _ => None
         }
+        jobAdView.externallink = Some(param.get("externallink").head)
 
         jobAdView.allow_personalized = param.get("allow_personalized").head.toBoolean
 

@@ -16,3 +16,4 @@ dist
 .env
 hs_err_pid21746.log
 conf/application.conf
+test/controllers/

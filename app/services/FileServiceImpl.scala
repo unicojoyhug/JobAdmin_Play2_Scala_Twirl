@@ -63,7 +63,7 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
     *
     * @return
     */
-  private def handleFilePartAsFile: FilePartHandler[File] = {
+  override def handleFilePartAsFile: FilePartHandler[File] = {
     case FileInfo(partName, filename, contentType) =>
       val path: Path = Files.createTempFile("multipartBody", "tempFile")
       val fileSink: Sink[ByteString, Future[IOResult]] = FileIO.toPath(path)
