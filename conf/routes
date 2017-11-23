@@ -44,7 +44,6 @@ GET     /company/newCompany             @controllers.CompanyController.index
 + nocsrf
 POST     /company/newCompany           @controllers.CompanyController.createCompany
 
-
 + nocsrf
 POST    /company/editCompany/index/:companyId           @controllers.CompanyController.editIndex(companyId: Int)
 

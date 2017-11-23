@@ -10,4 +10,6 @@ trait SpecialAgreementService {
 
   def createSpecialAgreements(companyId: Int) : Future[Int]
 
+  def deleteSpecialAgreements(id: Int) : Future[Int]
+
 }

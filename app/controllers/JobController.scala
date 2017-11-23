@@ -1,31 +1,18 @@
 package controllers
 
-import java.io.File
-import java.nio.file.{Files, Path, Paths}
+import org.joda.time.format.DateTimeFormat
 import javax.inject.{Inject, Singleton}
 
-import akka.stream.IOResult
-import akka.stream.scaladsl.{FileIO, Sink, Source}
-import akka.util.ByteString
-import models.JobAd
-import play.api.libs.streams.Accumulator
-import play.api.mvc.MultipartFormData.{DataPart, FilePart}
-import play.core.parsers.Multipart.FileInfo
-
-import scala.concurrent.Future
 import play.api._
 import play.api.mvc._
-import play.api.data._
-import play.api.data.Forms._
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
+
 import services.{CategoryService, CompanyService, FileService, JobAdService}
-import models.{JobAdForm, JobAdView}
-import play.api.libs.json.Writes
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.format.DateTimeFormatter
-import play.api.libs.ws.WSClient
+import models.JobAdView
+
 
 @Singleton
 class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configuration: Configuration, fileService: FileService, jobAdService: JobAdService, categoryService: CategoryService, companyService: CompanyService)

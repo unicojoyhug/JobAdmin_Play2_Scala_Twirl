@@ -50,6 +50,7 @@ class CompanyView {
   var name: String = _
   var logo: String = _
   var specialAgreement: Boolean = _
+  var specialAgreementId: Option[Int] = None
 }
 
 

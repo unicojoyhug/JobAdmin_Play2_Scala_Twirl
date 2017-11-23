@@ -48,12 +48,16 @@ class CompanyServiceImpl  @Inject()(ws: WSClient, configuration: Configuration, 
       companyView.name = company.name
       companyView.logo = company.logo
 
-      if(specialAgreementResult.exists(c => c.company_id == company.id.getOrElse(-1))){
-        companyView.specialAgreement = true
+      companyView.specialAgreementId = specialAgreementResult.find(c => c.company_id == companyView.id) match {
+        case Some(x) =>
+          companyView.specialAgreement = true
+          x.id
+        case _ =>
+          companyView.specialAgreement = false
+          Option(-1)
       }
 
       companyViewList += companyView
-
     }
 
     return companyViewList.toList

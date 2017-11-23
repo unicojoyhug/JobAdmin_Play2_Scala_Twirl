@@ -9,45 +9,53 @@ import akka.stream.scaladsl.{FileIO, Sink, Source}
 import akka.util.ByteString
 import play.api.libs.streams.Accumulator
 import play.api.{Configuration, Logger}
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.mvc.MultipartFormData
 import play.api.mvc.MultipartFormData.{DataPart, FilePart}
 import play.core.parsers.Multipart.FileInfo
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Try, Success, Failure}
 
 
 class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) extends FileService {
   val api_key: String = configuration.get[String]("security.apikeys")
   val url: String = configuration.get[String]("job_api.url")
 
-  override def uploadFile(file: Option[MultipartFormData.FilePart[File]], id: Int, caseName: String)  = {
+  override def uploadFile(file: Option[MultipartFormData.FilePart[File]], id: Int, caseName: String): Future[Try[Int]]= {
 
-    val fileOption = file map {
-      case FilePart(key, filename, contentType, file) =>
+  file match {
+      case Some(FilePart(key, filename, contentType, file)) =>
         Logger.info(s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
 
-        // /v1/admin/companies/image/:id
-        // /v1/admin/jobs/pdf/:id
-        // /v1/admin/jobs/image/:id
-        val fileupload = ws.url(s"$url/$caseName/$key/$id").addHttpHeaders("X-API-KEY" -> api_key)
-          .post(Source(FilePart(key, s"${filename}", Option(s"${contentType}") , FileIO.fromPath(file.toPath)) :: DataPart("key", "value") :: List()))
+        for{
+          fupload <- uploadFile(id, caseName, key, filename, contentType, file)
+          result <- handleFileupload(fupload)
+          _ <- operateOnTempFile(file)
+        } yield result
 
-        fileupload map {
-          result =>
-            result match {
-              case x if 200 until 299 contains x.status.intValue =>
-                println("File uploaded")
+      case None => Future.successful(Success(0))
+    }
+  }
 
-              case resultCode =>
-                println("#########################")
-                println(s"File not uploaded : " + resultCode)
-                println("#########################")
-                println("File failed")
-            }
-            operateOnTempFile(file)
-        }
+  private def uploadFile(id: Int, caseName: String, key: String, filename: String, contentType: Option[String], file: File) = {
+    ws.url(s"$url/$caseName/$key/$id").addHttpHeaders("X-API-KEY" -> api_key)
+      .post(Source(FilePart(key, s"${filename}", Option(s"${contentType}"), FileIO.fromPath(file.toPath)) :: DataPart("key", "value") :: List()))
+  }
+
+  def handleFileupload(result: WSResponse):Future[Try[Int]] ={
+    result match {
+      case x if 200 until 299 contains x.status.intValue =>
+        println("File uploaded")
+        Future.successful(Success(x.status.intValue()))
+
+      case resultCode =>
+        println("#########################")
+        println(s"File not uploaded : " + resultCode)
+        println("#########################")
+        println("File failed")
+        Future.successful(Failure(new Exception(s"File not uploaded : " + resultCode)))
     }
   }
 
@@ -76,11 +84,12 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
   /**
     * A generic operation on the temporary file that deletes the temp file after completion.
     */
-  private def operateOnTempFile(file: File)= {
+  private def operateOnTempFile(file: File) = {
     val size = Files.size(file.toPath)
     Logger.info(s"size = ${size}")
     Files.deleteIfExists(file.toPath)
-    size
+
+    Future.successful(size)
 
   }
 

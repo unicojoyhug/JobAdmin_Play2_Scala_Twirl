@@ -1,13 +1,18 @@
 package controllers
 
+import java.io.File
 import javax.inject.Inject
 
+import akka.pattern.FutureRef
 import models.CompanyView
 import play.api.Logger
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.libs.json.JsResult
+import play.api.mvc.{AbstractController, ControllerComponents, MultipartFormData, Request}
 import services.{CompanyService, FileService, SpecialAgreementService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.{Failure, Try}
 
 
 class CompanyController @Inject()(cc: ControllerComponents, companyService: CompanyService, fileService:FileService, specialAgreementService: SpecialAgreementService)
@@ -27,6 +32,7 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     company.id = companyId
     company.name = param.get("name").head
     company.specialAgreement = param.get("specialAgreement").head.toBoolean
+    company.specialAgreementId = Some(param.get("specialAgreementId").head.toInt)
     company.logo = param.get("logo").head
 
     Ok(views.html.editcompany(company))
@@ -39,24 +45,44 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     company.id = companyId
     company.name = param.get("name").head.head
     company.specialAgreement = param.get("specialAgreement").head.head.toBoolean
+    company.specialAgreementId = Some(param.get("specialAgreementId").head.head.toInt)
     company.logo = param.get("externallink").head.head
 
-    val editedCompanyId: scala.concurrent.Future[Int] = companyService.editCompany(company)
 
-    editedCompanyId map {
-      id =>
-        if (param.get("companylogo").head.head == "image") {
-          fileService.uploadFile(request.body.file("image"), id, caseName = "companies")
-        }
+    val companyLogo = param.get("companylogo").head.head
 
-        if (company.specialAgreement) {
-          val specialAgreementId = specialAgreementService.createSpecialAgreements(id).map {
-            result =>
-              Logger.debug("New SpecialAgreement id = " + result)
-          }
-        }
+    val result = for {
+      editedCompanyId <- companyService.editCompany(company)
+      _ <- uploadFile(request, editedCompanyId, companyLogo)
+      specialAgreementId <- specialAgreement(editedCompanyId, company.specialAgreement, company.specialAgreementId)
 
-        Redirect(routes.CompanyController.getAllCompanyViews())
+    }yield (0)
+
+    result.map{ res =>
+      Redirect(routes.CompanyController.getAllCompanyViews())
+    }
+  }
+
+  private def specialAgreement(editedCompanyId: Int, hasSpecialAgreement: Boolean, specialAgreementId: Option[Int]): Future[Int] = {
+    hasSpecialAgreement match {
+      case true => specialAgreementService.createSpecialAgreements(editedCompanyId)
+      case false => deleteSpecialAgreement(specialAgreementId)
+    }
+  }
+
+  private def deleteSpecialAgreement(specialAgreementId: Option[Int]): Future[Int] ={
+    specialAgreementId match {
+      case Some(id:Int) => specialAgreementService.deleteSpecialAgreements(id)
+      case _ =>  Future.successful(0)
+    }
+  }
+
+  private def uploadFile(request: Request[MultipartFormData[File]], companyId: Int, companyLogo: String): Future[Try[Int]] = {
+
+    if (companyLogo == "image") {
+      fileService.uploadFile(request.body.file("image"), companyId, caseName = "companies")
+    } else {
+       Future.successful(Failure(new Exception("No file to upload")))
     }
   }
 
@@ -71,26 +97,17 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     var company = new CompanyView()
     company.name = param.get("name").head.head
     company.specialAgreement = param.get("specialAgreement").head.head.toBoolean
+    val companyLogo = param.get("companylogo").head.head
 
-    val newCompanyId : scala.concurrent.Future[Int] = companyService.createCompany(company)
+    val result = for {
+      newCompanyId <- companyService.createCompany(company)
+      _ <- uploadFile(request, newCompanyId, companyLogo)
+      specialAgreementId <- specialAgreement(newCompanyId, company.specialAgreement, None)
 
-    newCompanyId map {
-      id =>
-        Logger.debug("New Company id = " + id)
+    }yield (0)
 
-        if(id != -1){
-          //TODO: need to make Future return to get right redirect
-          fileService.uploadFile(request.body.file("image"), id, caseName = "companies")
-        }
-
-        if(company.specialAgreement){
-          val specialAgreementId = specialAgreementService.createSpecialAgreements(id).map{
-            result =>
-              Logger.debug("New SpecialAgreement id = " + result)
-          }
-        }
-        Redirect(routes.CompanyController.getAllCompanyViews())
+    result.map{ res =>
+      Redirect(routes.CompanyController.getAllCompanyViews())
     }
-
   }
 }

@@ -46,4 +46,17 @@ class SpecialAgreementServiceImpl @Inject()(ws: WSClient, configuration: Configu
 
     return futureResponse
   }
+
+  override def deleteSpecialAgreements(id: Int): Future[Int] = {
+    //v1/admin/specialagreements/:id
+
+    val futureResponse = ws.url(s"$url/specialagreements/$id").addHttpHeaders("X-API-KEY" -> api_key).delete().map {
+      result => (result.json \ "Status").as[String] match {
+        case "Ok" => 1
+        case _ => -1
+      }
+    }
+    return futureResponse
+
+  }
 }
