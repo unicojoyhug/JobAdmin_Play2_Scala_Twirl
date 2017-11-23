@@ -3,8 +3,9 @@ package services
 import javax.inject.Inject
 
 import models.{Company, CompanyView, SpecialAgreement}
+import org.joda.time.DateTime
 import play.api.Configuration
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSClient
 
 import scala.collection.mutable.ListBuffer
@@ -56,5 +57,50 @@ class CompanyServiceImpl  @Inject()(ws: WSClient, configuration: Configuration, 
     }
 
     return companyViewList.toList
+  }
+
+  override def editCompany(companyView: CompanyView): Future[Int] = {
+    var company = convertCompanyViewToJsValue(companyView)
+
+    val futureResponse = ws.url(s"$url/companies").addHttpHeaders("X-API-KEY" -> api_key).put(company).map {
+      result => (result.json \ "company_id").as[Int]
+    }
+
+    return futureResponse
+  }
+
+  def convertCompanyViewToJsValue(companyView: CompanyView): JsValue = {
+    implicit val format = Json.writes[Company]
+
+    var company = new Company(
+      Option(companyView.id),
+      companyView.name,
+      DateTime.now().getMillis,
+      DateTime.now().getMillis,
+      companyView.logo
+    )
+
+    return  Json.toJson[Company](company)
+  }
+
+  override def createCompany(companyView: CompanyView): Future[Int]  = {
+
+    var company = convertCompanyViewToJsValue(companyView)
+
+    val futureResponse = ws.url(s"$url/companies").addHttpHeaders("X-API-KEY" -> api_key).post(company).map {
+
+        result => result match {
+          case x if 200 until 299 contains x.status.intValue => (result.json \ "company_id").as[Int]
+
+          case resultCode =>
+            println("#########################")
+            println(s"Failed to  : " + (result.json \ "Status").as[String])
+            println("#########################")
+
+            -1
+        }
+    }
+
+    return futureResponse
   }
 }

@@ -22,7 +22,7 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
   val api_key: String = configuration.get[String]("security.apikeys")
   val url: String = configuration.get[String]("job_api.url")
 
-  override def uploadFile(file: Option[MultipartFormData.FilePart[File]], id: Int, caseName: String): Unit = {
+  override def uploadFile(file: Option[MultipartFormData.FilePart[File]], id: Int, caseName: String)  = {
 
     val fileOption = file map {
       case FilePart(key, filename, contentType, file) =>
@@ -35,24 +35,22 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
           .post(Source(FilePart(key, s"${filename}", Option(s"${contentType}") , FileIO.fromPath(file.toPath)) :: DataPart("key", "value") :: List()))
 
         fileupload map {
-          result => result match {
-            case x if 200 until 299 contains x.status.intValue => println("File uploaded")
+          result =>
+            result match {
+              case x if 200 until 299 contains x.status.intValue =>
+                println("File uploaded")
 
-            case resultCode =>
-              println("#########################")
-              println(s"File not uploaded : " + resultCode)
-              println("#########################")
-              println("File failed")
-
-          }
-
+              case resultCode =>
+                println("#########################")
+                println(s"File not uploaded : " + resultCode)
+                println("#########################")
+                println("File failed")
+            }
             operateOnTempFile(file)
-
         }
-
-
     }
   }
+
   type FilePartHandler[A] = FileInfo => Accumulator[ByteString, FilePart[A]]
 
   /**
@@ -78,11 +76,12 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
   /**
     * A generic operation on the temporary file that deletes the temp file after completion.
     */
-  private def operateOnTempFile(file: File) = {
+  private def operateOnTempFile(file: File)= {
     val size = Files.size(file.toPath)
     Logger.info(s"size = ${size}")
     Files.deleteIfExists(file.toPath)
     size
+
   }
 
 }

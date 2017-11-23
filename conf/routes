@@ -14,6 +14,7 @@ GET     /                               @controllers.SiteController.getAllSites
 
 GET     /site/:siteId                   @controllers.SiteController.selectSite(siteId: Int)
 
+#Job
 GET     /jobs/:site                     @controllers.JobController.getAllJobAds(site: String)
 
 GET     /jobs/:site/:id                 @controllers.JobController.deleteJobAd(site:String, id: Int)
@@ -22,8 +23,6 @@ GET     /job/newJob/:site/:id          @controllers.JobController.index(site:Str
 
 + nocsrf
 POST     /job/newJob/:siteId            @controllers.JobController.createJobAd(siteId: Int)
-#POST     /job/newJob/:siteId            @controllers.JobController.createJobAdWithFile(siteId: Int)
-
 
 + nocsrf
 POST    /job/editJob/:site/:jobId           @controllers.JobController.editIndex(site:String, jobId: Int)
@@ -31,9 +30,23 @@ POST    /job/editJob/:site/:jobId           @controllers.JobController.editIndex
 + nocsrf
 POST     /job/editJob/:site/:siteId/:jobId            @controllers.JobController.editJobAd(site:String, siteId: Int, jobId: Int)
 
-+ nocsrf
-#POST    /upload/:caseName/:key/:id                       @controllers.FileUploadController.upload(caseName: String, key:String, id:Int)
-POST    /upload                       @controllers.FileUploadController.upload()
-#POST    /upload/:caseName/:key                      @controllers.FileUploadController.upload(caseName: String, key:String)
+
+#Company
 
 GET     /company                        @controllers.CompanyController.getAllCompanyViews
+
+GET     /company/newCompany             @controllers.CompanyController.index
+
+###
+# summary: create company
+# description: create company
+###
++ nocsrf
+POST     /company/newCompany           @controllers.CompanyController.createCompany
+
+
++ nocsrf
+POST    /company/editCompany/index/:companyId           @controllers.CompanyController.editIndex(companyId: Int)
+
++ nocsrf
+POST    /company/editCompany/:companyId           @controllers.CompanyController.editCompany(companyId: Int)

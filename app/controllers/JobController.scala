@@ -65,7 +65,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
     newJobAdId map {
       id =>
         Logger.debug("New JobAd id = " + id)
-        if (param.get("joblogo").head == Vector("pdf")) {
+        if (param.get("company_image").head == Vector("pdf")) {
           fileService.uploadFile(request.body.file(key), id, caseName = "jobs")
         }
     }

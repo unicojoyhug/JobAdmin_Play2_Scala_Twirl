@@ -3,7 +3,18 @@
 
 
 @main("Virksomhed") {
+
+
     <div id="wrap">
+
+        <div class="col-md-3">
+        @helper.form(action = routes.CompanyController.index()){
+            <button type="submit" class="btn btn-outline-success">Opret virksomhed</button>
+        }
+
+        </div>
+
+
         <div class="container">
             <table id="companyListTable" class="table table-striped table-bordered .table-hover " cellspacing="0" width="100%">
                 <thead>
@@ -11,13 +22,15 @@
                         <th>Navn</th>
                         <th>Storkundeaftale</th>
                         <th>Logo</th>
+                        <th>Edit</th>
                     </tr>
                 </thead>
                 <tbody>
                 @for(company <- lists) {
                     <tr>
+                        <form target='_parent' action="@routes.CompanyController.editIndex(company.id)" method="post">
 
-                            <td>@company.name</td>
+                            <td> @company.name</td>
                         @if(company.specialAgreement){
                             <td>Ja</td>
                         }else{
@@ -25,6 +38,14 @@
                         }
                         <td class="logo"><img class="conpany_img" src="@company.logo"></td>
 
+                        <td>
+                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Edit</button>
+                        </td>
+                            <input type="hidden" name="name" value="@company.name">
+                            <input type="hidden" name="specialAgreement" value="@company.specialAgreement">
+                            <input type="hidden" name="logo" value="@company.logo">
+
+                        </form>
                     </tr>
                 }
                 </tbody>

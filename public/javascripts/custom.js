@@ -3,7 +3,7 @@ var site = {
         site.getSite();
         site.setDataTable();
         site.setDeleteJobAlert();
-        site.setCreateJobAlert();
+        site.setCreateAlert();
         site.setDatePicker();
         site.validator();
     },
@@ -66,6 +66,7 @@ var site = {
 
     setDeleteJobAlert: function () {
         $('.btn-delete-submit').on('click', function (e) {
+
             e.preventDefault();
             var form = $(this).parents('form');
 
@@ -89,30 +90,35 @@ var site = {
             });
         });
     },
-    setCreateJobAlert: function () {
+
+    setCreateAlert: function () {
         $('.btn-create-submit').on('click', function (e) {
+
             e.preventDefault();
             var form = $(this).parents('form');
 
+            var alertType = $(this).attr('data-alert-type');
+
             swal({
                 title: "Er du sikker?",
-                text: "Jobbet vil blive oprettet.",
+                text: alertType + " vil blive oprettet.",
                 icon: "warning",
                 buttons: true,
                 buttons: ["Annuller", "Opret"],
                 dangerMode: false,
             }).then((willCreate) => {
                 if (willCreate) {
-                    swal("Jobbet er oprettet", {
+                    swal(alertType +" er oprettet", {
                         icon: "success",
                     });
                     form.submit();
 
                 }else {
-                    swal("Annulleret", "Jobbet bliver ikke oprettet.", "error");
+                    swal("Annulleret", alertType +" bliver ikke oprettet.", "error");
         }
         });
         });
+
     },
 
     setDatePicker: function(){

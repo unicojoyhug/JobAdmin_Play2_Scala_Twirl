@@ -43,3 +43,14 @@ iframe {
 .with-errors {
     color: red;
 }
+
+.fileform {
+
+    margin-top: 13px;
+    margin-bottom: 6px;
+}
+
+/* Switch button https://bootsnipp.com/snippets/xzXG */
+
+.btn-default.btn-on.active{background-color: #5BB75B;color: white; }
+.btn-default.btn-off.active{background-color: #DA4F49;color: white;}

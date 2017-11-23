@@ -8,4 +8,6 @@ trait SpecialAgreementService {
 
   def getAllSpecialAgreements(): Future[List[SpecialAgreement]]
 
+  def createSpecialAgreements(companyId: Int) : Future[Int]
+
 }

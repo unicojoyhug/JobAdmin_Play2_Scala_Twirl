@@ -13,7 +13,7 @@ class JobAdServiceIS extends PlaySpec with Results with BeforeAndAfter with Inte
 
   val jobAdView = new JobAdView()
   jobAdView.title = "TestJob"
-  jobAdView.externallink = "Test Edit"
+  jobAdView.externallink = Some("Test Edit")
   jobAdView.startdate = 1509954397228l
   jobAdView.enddate = 1509954397228l
   jobAdView.site_id = 12

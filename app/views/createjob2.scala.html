@@ -11,7 +11,7 @@
     <div class="container jumbotron">
 
 
-            <form data-toggle="validator" role="form" action="@routes.JobController.createJobAd(id)" method="post" enctype="multipart/form-data">
+            <ss=" data-toggle="validator" role="form" action="@routes.JobController.createJobAd(id)" method="post" enctype="multipart/form-data">
 
             <div class="form-group">
                 <label for="jobtitle">Title</label>
@@ -93,19 +93,21 @@
 
             </div>
 
-            <div class="radio">
+            <div class="radio fileform">
+
             <label>
                 <input type="radio" name="joblogo" id="raido_pdf" value="pdf"> PDF file </label>
             </div>
             <input type="file" name="pdf" id="pdf">
 
+                <p class="lead">
 
             <div class="form-group">
-                <button type="submit" class="btn btn-success btn-create-submit">Opret job</button>
+                <button type="submit" class="btn btn-success btn-create-submit" data-alert-type="Jobbet">Opret job</button>
             </div>
 
         </form>
-
+    </p>
 
 </div>
 
