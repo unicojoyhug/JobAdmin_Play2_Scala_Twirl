@@ -15,6 +15,9 @@ GET     /                               @controllers.SiteController.getAllSites
 GET     /site/:siteId                   @controllers.SiteController.selectSite(siteId: Int)
 
 #Job
+GET     /jobs/:site/unexpiredJobs           @controllers.JobController.showUnexpiredJobs(site: String)
+GET     /jobs/:site/expiredJobs           @controllers.JobController.showExpiredJobs(site: String)
+
 GET     /jobs/:site                     @controllers.JobController.getAllJobAds(site: String)
 
 GET     /jobs/:site/:id                 @controllers.JobController.deleteJobAd(site:String, id: Int)

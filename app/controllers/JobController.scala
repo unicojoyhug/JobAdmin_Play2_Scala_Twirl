@@ -41,6 +41,34 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
     }*/
   }
 
+  def showUnexpiredJobs (site: String) = Action.async {
+    for{
+      list <- jobAdService.getAllJobAdViews(site)
+      unexpiredJobAds <- getUnexpiredJobAdList(list)
+      activeJobAds <- countActiveJobAds(unexpiredJobAds)
+      upcomingJobAds <- countUpcomingJobAds(unexpiredJobAds.size, activeJobAds)
+
+    }yield Ok(views.html.unexpiredjobs( jobAdService.getMsg(),  unexpiredJobAds, activeJobAds, upcomingJobAds ))
+
+  }
+
+  def showExpiredJobs (site: String) = Action.async {
+    for{
+      list <- jobAdService.getAllJobAdViews(site)
+      expiredJobAds <- getExpiredJobAdList(list)
+    }yield Ok(views.html.expiredjobs( jobAdService.getMsg(),  expiredJobAds, expiredJobAds.size ))
+
+  }
+
+
+  private def countActiveJobAds(list: List[JobAdView]): Future[Int] = {
+    Future.successful(list.count(j => j.startdate<DateTime.now().getMillis))
+  }
+
+  private def countUpcomingJobAds(total: Int, activeJobs: Int): Future[Int] ={
+    Future.successful(total - activeJobs)
+  }
+
   private def getUnexpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
     var yesterday = DateTime.now().minusDays(1).getMillis
 

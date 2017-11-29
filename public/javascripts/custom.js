@@ -11,14 +11,34 @@ var site = {
     getSite: function () {
         var name = "finanswatch.dk";
         var id = 1
-        $('#jobIframe').attr("src", "jobs/" + name);
+        var status = "unexpiredJobs";
+        $('#jobIframe').attr("src", "jobs/" + name + "/" + status);
         $('#newjob').attr("href", "/job/newJob/" + name + "/" + id);
         $('#addJobBtn').attr("href", "/job/newJob/" + name + "/" + id);
 
         $('#site').change(function () {
             name = $(this).find("option:selected").text().trim();
-            id = $(this).find("option:selected").val()
-            $('#jobIframe').attr("src", "jobs/" + name);
+            id = $(this).find("option:selected").val();
+
+            $('#jobIframe').attr("src", "jobs/" + name + "/unexpiredJobs");
+            $('#newjob').attr("href", "/job/newJob/" + name + "/" + id);
+            $('#addJobBtn').attr("href", "/job/newJob/" + name + "/" + id);
+            $('.btn.btn-default.btn-on.btn-lg').addClass('active');
+            $('.btn.btn-default.btn-off.btn-lg').removeClass('active');
+
+        });
+
+        $('#status').change(function () {
+            if(status.match('unexpiredJobs')){
+                status = "expiredJobs";
+            }else if(status.match('expiredJobs')){
+                status = "unexpiredJobs";
+            }
+
+            name = $('#site').find("option:selected").text().trim();
+            id = $('#site').find("option:selected").val();
+
+            $('#jobIframe').attr("src", "jobs/" + name + "/" + status);
             $('#newjob').attr("href", "/job/newJob/" + name + "/" + id);
             $('#addJobBtn').attr("href", "/job/newJob/" + name + "/" + id);
 
@@ -27,6 +47,8 @@ var site = {
     },
 
     setDataTable: function () {
+        $.fn.dataTable.moment( 'DD-MM-YYYY' );
+
         $('#joblistTable').dataTable({
             "language": {
                 "lengthMenu": "Vis _MENU_ jobs per side",
@@ -122,6 +144,7 @@ var site = {
     },
 
     setDatePicker: function(){
+
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $.fn.datepicker.defaults.language = "da";
         $.fn.datepicker.defaults.calendarWeeks = true;

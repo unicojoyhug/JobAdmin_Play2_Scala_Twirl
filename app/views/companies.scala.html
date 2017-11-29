@@ -6,14 +6,15 @@
 
 
     <div id="wrap">
+        <div class="container">
 
-        <div class="col-md-3">
+        <div class="buttonmargin">
         @helper.form(action = routes.CompanyController.index()){
             <button type="submit" class="btn btn-outline-success">Opret virksomhed</button>
         }
 
         </div>
-
+        </div>
 
         <div class="container">
             <table id="companyListTable" class="table table-striped table-bordered .table-hover " cellspacing="0" width="100%">

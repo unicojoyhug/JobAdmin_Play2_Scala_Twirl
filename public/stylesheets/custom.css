@@ -50,6 +50,14 @@ iframe {
     margin-bottom: 6px;
 }
 
+.buttonmargin {
+
+    margin: 14px;
+}
+
+.btn-create{
+    margin-left: 14px;
+}
 /* Switch button https://bootsnipp.com/snippets/xzXG */
 
 .btn-default.btn-on.active{background-color: #5BB75B;color: white; }

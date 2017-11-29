@@ -3,19 +3,26 @@
 @(message: String, lists : List[Site])
 
 @main("Job Admin") {
-     <div class="form-group col-md-8 offset-1">
-<div class ="input-group col-md-4">
+     <div class="form-group col-md-12 offset-1">
+<div class ="input-group col-md-9">
 
-    <select class="form-control" id="site">
+    <select class="form-control col-md-2" id="site">
     @for(site <- lists) {
         <option value="@site.id"> @site.name </option>
     }
     </select>
 
-    <a type="button" class="btn btn-outline-success col-md-5 offset-1" id="addJobBtn">Opret Job</a>
-</div>
+    <a type="button" class="btn btn-outline-success col-md-1 btn-create" id="addJobBtn">Opret Job</a>
 
-    </div>
+
+        <div class="btn-group col-md-3 offset-6" id="status" data-toggle="buttons">
+            <label data-jobtype="unexpiredJobs" class="btn btn-default btn-on btn-md active">
+                <input type="radio" value="unexpiredJobs" name="jobstatus" >Ikke-udløbne jobs</label>
+            <label data-jobtype="expiredJobs" class="btn btn-default btn-off btn-md">
+                <input type="radio" value="expiredJobs" name="jobstatus">Udløbne jobs</label>
+        </div>
+     </div>
+     </div>
 
     <iframe id="jobIframe"></iframe>
 }
