@@ -16,6 +16,10 @@ trait JobAdService {
 
   def editJobAd(jobAdView: JobAdView) : Future[Int]
 
+  //def getActiveJobAdViews (site:String): Future[List[JobAdView]]
+
+  //def getExpiredJobAdViews (site: String): Future[List[JobAdView]]
+
  // def getJobAdById(jobAdId: Int) : Future[JobAdView]
 
 }

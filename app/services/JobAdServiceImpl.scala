@@ -32,7 +32,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
   override def getMsg() = "Vælg Site"
 
-  override def getAllJobAdViews (site: String): Future[List[JobAdView]] = {
+  override def getAllJobAdViews(site: String): Future[List[JobAdView]] = {
 
     for {
       r1 <- getAllJobs(site)
@@ -80,11 +80,10 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
   }
 
 
-
   def convertDomainToViewModel(jobAdsResult: List[JobAd], companiesResult: List[Company], categoriesResult: List[Category], siteResult: List[Site]): List[JobAdView] = {
     var jobAdViewList = ListBuffer[JobAdView]()
 
-    for (jobAd <- jobAdsResult){
+    for (jobAd <- jobAdsResult) {
       val jobAdView = new JobAdView()
       jobAdView.id = jobAd.id.getOrElse(-1)
       jobAdView.title = jobAd.title
@@ -93,7 +92,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
       jobAdView.category_id match {
         case Some(-1) => jobAdView.category_name = Option("N/A")
-        case Some(id: Int)=>jobAdView.category_name = Option(categoriesResult.find(c=> c.id == id).get.name)
+        case Some(id: Int) => jobAdView.category_name = Option(categoriesResult.find(c => c.id == id).get.name)
         case _ => None
       }
 
@@ -119,7 +118,7 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
   }
 
-  override def deleteJobAd(jobAdId: Int):Future[String] = {
+  override def deleteJobAd(jobAdId: Int): Future[String] = {
     val futureResponse = ws.url(s"$url/jobs/$jobAdId").addHttpHeaders("X-API-KEY" -> api_key).delete().map {
       result => (result.json \ "Status").as[String]
     }

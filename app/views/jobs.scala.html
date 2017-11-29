@@ -1,12 +1,12 @@
 
 @import org.joda.time.format.DateTimeFormat
-@(message: String, lists : List[JobAdView])
+@(message: String, lists : List[JobAdView], unexpiredJobAds : List[JobAdView], expiredJobAds: List[JobAdView], status: Boolean)
 @stylesheet()
 @scripts()
 
         <div id="wrap">
             <div class="container">
-                <h1>Joblisten</h1>
+                <h1></h1>
 
         <table id="joblistTable" class="table table-striped table-bordered .table-hover " cellspacing="0" width="100%">
             <thead>

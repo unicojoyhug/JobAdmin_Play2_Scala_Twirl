@@ -1,17 +1,21 @@
 package controllers
 
+import java.io.File
+
 import org.joda.time.format.DateTimeFormat
 import javax.inject.{Inject, Singleton}
 
 import play.api._
 import play.api.mvc._
 import play.api.libs.ws.WSClient
+import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Try
-
+import scala.util.{Failure, Try}
 import services.{CategoryService, CompanyService, FileService, JobAdService}
 import models.JobAdView
+
+import scala.concurrent.Future
 
 
 @Singleton
@@ -19,12 +23,33 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getAllJobAds (site: String) = Action.async {
+    for{
+      list <- jobAdService.getAllJobAdViews(site)
+      unexpiredJobAds <- getUnexpiredJobAdList(list)
+      expiredJobAds <- getExpiredJobAdList(list)
 
-    val lists : scala.concurrent.Future[List[JobAdView]] = jobAdService.getAllJobAdViews(site)
+    }yield Ok(views.html.jobs( jobAdService.getMsg(), list, unexpiredJobAds, expiredJobAds, true))
+
+    /*val lists : scala.concurrent.Future[List[JobAdView]] = jobAdService.getAllJobAdViews(site)
 
     lists map {
-      list =>  Ok(views.html.jobs( jobAdService.getMsg(),list))
-    }
+      list =>
+        var yesterday = DateTime.now().minusDays(1).getMillis
+
+        var unexpiredJobs =  list.filter(_.enddate>yesterday)
+        Ok(views.html.jobs( jobAdService.getMsg(),unexpiredJobs))
+    }*/
+  }
+
+  private def getUnexpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
+    var yesterday = DateTime.now().minusDays(1).getMillis
+
+    Future.successful(list.filter(_.enddate>yesterday))
+  }
+
+  private def getExpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
+    var today = DateTime.now().getMillis
+    Future.successful(list.filter(_.enddate<today))
   }
 
 
@@ -37,7 +62,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   }
 
 
-  def createJobAd(siteId: Int) = Action(parse.multipartFormData(fileService.handleFilePartAsFile)) { implicit request =>
+  def createJobAd(siteId: Int) = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) { implicit request =>
 
     val param = request.body.asFormUrlEncoded
 
@@ -45,21 +70,27 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
 
     jobAdView.site_id = siteId
 
-    val key = "pdf"
+    val joblogoType = param.get("joblogo").head.head
 
-    val newJobAdId: scala.concurrent.Future[Int] = jobAdService.createJobAd(jobAdView)
+    var result = for {
+      newJobAdId <- jobAdService.createJobAd(jobAdView)
+      uploadFileId <- uploadFile(request, newJobAdId, joblogoType)
+    }yield (0)
 
-    newJobAdId map {
-      id =>
-        Logger.debug("New JobAd id = " + id)
-        if (param.get("company_image").head == Vector("pdf")) {
-          fileService.uploadFile(request.body.file(key), id, caseName = "jobs")
-        }
+    result.map {
+      res =>
+        Redirect(routes.SiteController.getAllSites())
     }
-
-    Redirect(routes.SiteController.getAllSites())
   }
 
+  private def uploadFile(request: Request[MultipartFormData[File]], companyId: Int, joblogoType: String): Future[Try[Int]] = {
+
+    if (joblogoType == "pdf") {
+      fileService.uploadFile(request.body.file("pdf"), companyId, caseName = "jobs")
+    } else {
+      Future.successful(Failure(new Exception("No file to upload")))
+    }
+  }
 
 
   def deleteJobAd(site: String, id: Int) = Action.async {
@@ -87,7 +118,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
 
   }
 
-  def editJobAd(site: String, siteId: Int, id: Int) = Action(parse.multipartFormData(fileService.handleFilePartAsFile)) {
+  def editJobAd(site: String, siteId: Int, id: Int) = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) {
     implicit request =>
       val param = request.body.asFormUrlEncoded
       var jobAdView = getCommonDataFromView(Some(param), caseName = "jobAd", param.size, fileCheck = true)
@@ -99,17 +130,18 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
         case _ => None
       }
 
-      val key = "pdf"
+      val joblogoType = param.get("joblogo").head.head
 
-      val editedJobAdId: scala.concurrent.Future[Int] = jobAdService.editJobAd(jobAdView)
+      var result = for {
+        editedJobAdId <- jobAdService.editJobAd(jobAdView)
+        uploadFileId <- uploadFile(request, editedJobAdId, joblogoType)
+      }yield (0)
 
-      editedJobAdId map {
-        id =>
-          if (param.get("joblogo").head == Vector("pdf")) {
-            fileService.uploadFile(request.body.file(key), id, caseName = "jobs")
-          }
+      result.map {
+        res =>
+          Redirect(routes.SiteController.getAllSites())
       }
-      Redirect(routes.SiteController.getAllSites())
+
   }
 
   def getCommonDataFromView(param: Option[Map[String, Seq[String]]], caseName: String, paramSize: Int, fileCheck: Boolean): JobAdView = {

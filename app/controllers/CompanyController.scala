@@ -3,17 +3,14 @@ package controllers
 import java.io.File
 import javax.inject.Inject
 
-import akka.pattern.FutureRef
-import models.CompanyView
-import play.api.Logger
-import play.api.libs.json.JsResult
 import play.api.mvc.{AbstractController, ControllerComponents, MultipartFormData, Request}
-import services.{CompanyService, FileService, SpecialAgreementService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Failure, Try}
 
+import models.CompanyView
+import services.{CompanyService, FileService, SpecialAgreementService}
 
 class CompanyController @Inject()(cc: ControllerComponents, companyService: CompanyService, fileService:FileService, specialAgreementService: SpecialAgreementService)
   extends AbstractController(cc) with play.api.i18n.I18nSupport{
@@ -54,7 +51,7 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     val result = for {
       editedCompanyId <- companyService.editCompany(company)
       _ <- uploadFile(request, editedCompanyId, companyLogo)
-      specialAgreementId <- specialAgreement(editedCompanyId, company.specialAgreement, company.specialAgreementId)
+      specialAgreementId <- setSpecialAgreement(editedCompanyId, company.specialAgreement, company.specialAgreementId)
 
     }yield (0)
 
@@ -63,7 +60,7 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     }
   }
 
-  private def specialAgreement(editedCompanyId: Int, hasSpecialAgreement: Boolean, specialAgreementId: Option[Int]): Future[Int] = {
+  private def setSpecialAgreement(editedCompanyId: Int, hasSpecialAgreement: Boolean, specialAgreementId: Option[Int]): Future[Int] = {
     hasSpecialAgreement match {
       case true => specialAgreementService.createSpecialAgreements(editedCompanyId)
       case false => deleteSpecialAgreement(specialAgreementId)
@@ -97,12 +94,11 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     var company = new CompanyView()
     company.name = param.get("name").head.head
     company.specialAgreement = param.get("specialAgreement").head.head.toBoolean
-    val companyLogo = param.get("companylogo").head.head
 
     val result = for {
       newCompanyId <- companyService.createCompany(company)
-      _ <- uploadFile(request, newCompanyId, companyLogo)
-      specialAgreementId <- specialAgreement(newCompanyId, company.specialAgreement, None)
+      _ <- uploadFile(request, newCompanyId, "image")
+      specialAgreementId <- setSpecialAgreement(newCompanyId, company.specialAgreement, None)
 
     }yield (0)
 

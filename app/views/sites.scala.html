@@ -3,16 +3,16 @@
 @(message: String, lists : List[Site])
 
 @main("Job Admin") {
-     <div class="form-group col-md-3 ">
-            <label for="site">@message</label>
-<div class ="input-group">
+     <div class="form-group col-md-8 offset-1">
+<div class ="input-group col-md-4">
+
     <select class="form-control" id="site">
     @for(site <- lists) {
         <option value="@site.id"> @site.name </option>
     }
     </select>
 
-    <a type="button" class="btn btn-outline-success" id="addJobBtn">Opret Job</a>
+    <a type="button" class="btn btn-outline-success col-md-5 offset-1" id="addJobBtn">Opret Job</a>
 </div>
 
     </div>
