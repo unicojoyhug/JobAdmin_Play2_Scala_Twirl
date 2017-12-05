@@ -2,7 +2,11 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
-
+###
+# summary: AWS health check
+# description: Health check used by load balancer
+###
+GET     /health                                  @controllers.HealthController.health
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -1,11 +1,11 @@
-var site = {
+var admin = {
     init: function () {
-        site.getSite();
-        site.setDataTable();
-        site.setDeleteJobAlert();
-        site.setCreateAlert();
-        site.setDatePicker();
-        site.validator();
+        admin.getSite();
+        admin.setDataTable();
+        admin.setDeleteJobAlert();
+        admin.setCreateAlert();
+        admin.setDatePicker();
+        admin.validator();
     },
 
     getSite: function () {
@@ -23,8 +23,8 @@ var site = {
             $('#jobIframe').attr("src", "jobs/" + name + "/unexpiredJobs");
             $('#newjob').attr("href", "/job/newJob/" + name + "/" + id);
             $('#addJobBtn').attr("href", "/job/newJob/" + name + "/" + id);
-            $('.btn.btn-default.btn-on.btn-lg').addClass('active');
-            $('.btn.btn-default.btn-off.btn-lg').removeClass('active');
+            $('.btn.btn-default.btn-on.btn-md').addClass('active');
+            $('.btn.btn-default.btn-off.btn-md').removeClass('active');
 
         });
 
@@ -159,7 +159,7 @@ var site = {
 }
 
 
-$(site.init);
+$(admin.init);
 
 $("#radio_externallink").click(
     function() {
