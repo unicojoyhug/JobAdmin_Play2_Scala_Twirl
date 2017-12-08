@@ -28,17 +28,8 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
       unexpiredJobAds <- getUnexpiredJobAdList(list)
       expiredJobAds <- getExpiredJobAdList(list)
 
-    }yield Ok(views.html.jobs( jobAdService.getMsg(), list, unexpiredJobAds, expiredJobAds, true))
+    }yield Ok(views.html.jobs( jobAdService.getMsg(), list))
 
-    /*val lists : scala.concurrent.Future[List[JobAdView]] = jobAdService.getAllJobAdViews(site)
-
-    lists map {
-      list =>
-        var yesterday = DateTime.now().minusDays(1).getMillis
-
-        var unexpiredJobs =  list.filter(_.enddate>yesterday)
-        Ok(views.html.jobs( jobAdService.getMsg(),unexpiredJobs))
-    }*/
   }
 
   def showUnexpiredJobs (site: String) = Action.async {
@@ -80,13 +71,12 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
     Future.successful(list.filter(_.enddate<today))
   }
 
-
   def index(site:String, id: Int) = Action.async{
     implicit request =>
-    for {
+      for {
         r1 <-categoryService.getAllCategoriesBySite(site)
         r2 <-companyService.getAllCompanies()
-     }yield Ok(views.html.createjob2(site, id, r2, r1))
+      }yield Ok(views.html.createjob2(site, id, r2, r1))
   }
 
 

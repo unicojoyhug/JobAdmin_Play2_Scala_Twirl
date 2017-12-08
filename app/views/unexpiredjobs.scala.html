@@ -13,13 +13,13 @@
                 <tr>
                     <th>Navn</th>
                     <th>Virksomhed</th>
-                    <th>Kategori</th>
-                    <th>Job type</th>
-                    <th>Startdato</th>
-                    <th>Udløbsdato</th>
-                    <th>Logo</th>
-                    <th>Edit</th>
-                    <th>Slet</th>
+                    <th class="text-centered">Kategori</th>
+                    <th class="text-centered">Job type</th>
+                    <th class="text-centered">Startdato</th>
+                    <th class="text-centered">Udløbsdato</th>
+                    <th class="text-centered">Logo</th>
+                    <th class="text-centered">Rediger</th>
+                    <th class="text-centered">Slet</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,8 +30,8 @@
 
                         <td>@jobAd.title</td>
                         <td>@jobAd.company_name</td>
-                        <td>@jobAd.category_name</td>
-                        <td>@{
+                        <td class="text-centered">@jobAd.category_name</td>
+                        <td class="text-centered">@{
                             if(jobAd.premium){
                                 "Basis Plus"
                             }else if(jobAd.allow_personalized) {
@@ -40,11 +40,11 @@
                                "Basis"
                             }
                         }</td>
-                        <td>
+                        <td class="text-centered">
                             @defining(DateTimeFormat.forPattern("dd-MM-yyyy")) { dateFormatter =>
                                 @dateFormatter.print(jobAd.startdate)}
                         </td>
-                        <td> @defining(DateTimeFormat.forPattern("dd-MM-yyyy")) { dateFormatter =>
+                        <td class="text-centered"> @defining(DateTimeFormat.forPattern("dd-MM-yyyy")) { dateFormatter =>
                             @dateFormatter.print(jobAd.enddate)}</td>
                         <td class="logo"><img class="companylogo" src=@jobAd.logo alt="N/A"></td>
                         <input type="hidden" name="title" value="@jobAd.title" >
@@ -58,9 +58,8 @@
                         <input type="hidden" name="premium" value="@jobAd.premium">
                         <input type="hidden" name="allow_personalized" value="@jobAd.allow_personalized">
                             <input type="hidden" name="logo" value="@jobAd.logo">
-
-                        <td>
-                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Edit</button>
+                            <td class="text-centered">
+                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Rediger</button>
                         </td>
                         </form>
 

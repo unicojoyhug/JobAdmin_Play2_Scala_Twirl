@@ -31,8 +31,8 @@ iframe {
 
 
 .companylogo {
-    height: 70%;
-    width: 100%;
+    height: 35px;
+    width: 100px;
 }
 
 .conpany_img {
@@ -64,10 +64,21 @@ iframe {
     margin-left: 14px;
 }
 
-.btn-edit{
+.text-centered{
     text-align: center;
 }
 /* Switch button https://bootsnipp.com/snippets/xzXG */
 
-.btn-default.btn-on.active{background-color: #5BB75B;color: white; }
+.btn-default.btn-on.active{background-color: #5BB75B;color: white;}
 .btn-default.btn-off.active{background-color: #DA4F49;color: white;}
+
+#addJobBtn{
+    width: 125px;
+    max-width: 125px;
+    padding-left: 10px;
+}
+
+#site{
+    width: 220px;
+    max-width: 220px;
+}

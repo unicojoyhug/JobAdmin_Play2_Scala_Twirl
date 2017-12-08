@@ -1,6 +1,6 @@
 
 @import org.joda.time.format.DateTimeFormat
-@(message: String, lists : List[JobAdView], unexpiredJobAds : List[JobAdView], expiredJobAds: List[JobAdView], status: Boolean)
+@(message: String, lists : List[JobAdView])
 @stylesheet()
 @scripts()
 
@@ -17,9 +17,9 @@
                     <th>Job type</th>
                     <th>Startdato</th>
                     <th>Udløbsdato</th>
-                    <th>Logo</th>
-                    <th>Edit</th>
-                    <th>Slet</th>
+                    <th class="text-centered">Logo</th>
+                    <th class="text-centered">Rediger</th>
+                    <th class="text-centered">Slet</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,8 +59,8 @@
                         <input type="hidden" name="allow_personalized" value="@jobAd.allow_personalized">
                             <input type="hidden" name="logo" value="@jobAd.logo">
 
-                        <td>
-                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Edit</button>
+                        <td class="text-centered">
+                            <button type="submit" class="btn btn-outline-info btn-edit-submit">Rediger</button>
                         </td>
                         </form>
 
