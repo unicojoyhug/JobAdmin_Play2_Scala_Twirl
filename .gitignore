@@ -14,6 +14,6 @@ dist
 /RUNNING_PID
 /.settings
 .env
-hs_err_pid21746.log
+*log
 conf/application.conf
 test/controllers/

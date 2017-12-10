@@ -1,6 +1,6 @@
 @import helper._
 
-@(site: String, id: Int, companyList: List[Company], categoryList: List[Category])(implicit messages: Messages)
+@(site: String, id: Int, companyList: List[Company], categoryList: List[CategoryWithNumberOfJobsView] )(implicit messages: Messages)
 
 @main("Job Admin") {
     <div class="main-title">
@@ -78,7 +78,7 @@
                     <select class="form-control" id="category" name="category_id">
                         <option selected value="">Vælg kategori</option>
                         @for(category <- categoryList) {
-                            <option value="@category.id"> @category.name </option>
+                            <option value="@category.categoryId"> @category.categoryName ( @category.jobNumber ) </option>
                         }
                     </select>
 

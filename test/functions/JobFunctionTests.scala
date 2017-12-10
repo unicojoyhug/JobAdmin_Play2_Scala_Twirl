@@ -1,6 +1,6 @@
 import akka.actor.Status.Success
 import models.{JobAd, JobAdView}
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, Days}
 import org.scalatest.BeforeAndAfter
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsObject, JsValue, Json, Writes}
@@ -173,8 +173,7 @@ class JobFunctionTests extends PlaySpec with Results with BeforeAndAfter with In
     "getResponse" in {
 
       futureResponse mustBe Future(2492)
-
     }
-
   }
+
 }

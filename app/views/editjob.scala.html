@@ -1,5 +1,5 @@
 @import org.joda.time.format.DateTimeFormat
-@(jobAdView: JobAdView, categoryList: List[Category])(implicit messages: Messages)
+@(jobAdView: JobAdView, categoryList: List[CategoryWithNumberOfJobsView])(implicit messages: Messages)
 
 @main("Job Admin") {
     <div class="main-title">
@@ -83,10 +83,10 @@
                     <select class="form-control" id="category" name="category_id">
                         <option selected value="">Vælg kategori</option>
                         @for(category <- categoryList) {
-                            @if(category.id == jobAdView.category_id.getOrElse(-1)){
-                                <option value="@category.id" selected="selected"> @category.name </option>
+                            @if(category.categoryId == jobAdView.category_id.getOrElse(-1)){
+                                <option value="@category.categoryId" selected="selected"> @category.categoryName ( @category.jobNumber ) </option>
                             }else{
-                                <option value="@category.id"> @category.name </option>
+                                <option value="@category.categoryId"> @category.categoryName ( @category.jobNumber ) </option>
                             }
                         }
                     </select>

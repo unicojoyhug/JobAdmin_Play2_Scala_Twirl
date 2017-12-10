@@ -13,7 +13,7 @@ import org.joda.time.DateTime
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Try}
 import services.{CategoryService, CompanyService, FileService, JobAdService}
-import models.JobAdView
+import models.{CategoryWithNumberOfJobsView, JobAdView}
 
 import scala.concurrent.Future
 
@@ -74,9 +74,18 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   def index(site:String, id: Int) = Action.async{
     implicit request =>
       for {
-        r1 <-categoryService.getAllCategoriesBySite(site)
-        r2 <-companyService.getAllCompanies()
-      }yield Ok(views.html.createjob2(site, id, r2, r1))
+        companyList <-companyService.getAllCompanies()
+        categoryList <- getCategoryWithJobAdsNumberList(site)
+      }yield Ok(views.html.createjob2(site, id, companyList, categoryList))
+  }
+
+
+
+  def getCategoryWithJobAdsNumberList(site:String): Future[List[CategoryWithNumberOfJobsView]] = {
+    for{
+      joblist <- jobAdService.getAllJobAdViews(site)
+      categorylist <- categoryService.getAllCategoriesBySite(site)
+    }yield categoryService.getCategoryWithNumberOfJobAdsBySite (joblist,site,categorylist)
   }
 
 
@@ -131,8 +140,8 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
       jobAdView.site_name = site
 
       for {
-        r1 <-categoryService.getAllCategoriesBySite(site)
-      }yield Ok(views.html.editjob(jobAdView, r1))
+        categoryList <- getCategoryWithJobAdsNumberList(site)
+      }yield Ok(views.html.editjob(jobAdView, categoryList))
 
   }
 

@@ -2,11 +2,12 @@ package services
 
 import javax.inject.Inject
 
-import models.{Category}
+import models.{Category, CategoryWithNumberOfJobsView, JobAdView}
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,5 +25,24 @@ class CategoryServiceImpl @Inject()(ws: WSClient, configuration: Configuration, 
     }
 
     return futureResponse
+  }
+
+  override def getCategoryWithNumberOfJobAdsBySite(joblist: List[JobAdView], site: String, categoryList: List[Category]): List[CategoryWithNumberOfJobsView] = {
+
+    var result = ListBuffer[CategoryWithNumberOfJobsView]()
+
+    for(item <- categoryList){
+      var jobNumber = 0
+      jobNumber = joblist.count(job => job.category_id.getOrElse(-1) == item.id)
+      val categoryWithJobNumber = CategoryWithNumberOfJobsView(
+        site,
+        item.id,
+        item.name,
+        jobNumber
+      )
+      result += categoryWithJobNumber
+    }
+
+    return result.toList
   }
 }

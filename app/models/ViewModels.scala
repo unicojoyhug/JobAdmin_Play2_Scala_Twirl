@@ -53,5 +53,7 @@ class CompanyView {
   var specialAgreementId: Option[Int] = None
 }
 
+case class CategoryWithNumberOfJobsView(site: String, categoryId: Int, categoryName: String, jobNumber: Int)
+
 
 
