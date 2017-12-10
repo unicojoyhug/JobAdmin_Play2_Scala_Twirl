@@ -1,9 +1,9 @@
 @import org.joda.time.format.DateTimeFormat
-@(jobAdView: JobAdView, categoryList: List[CategoryWithNumberOfJobsView])(implicit messages: Messages)
+@(site: String, jobAdView: JobAdView, categoryList: List[CategoryWithNumberOfJobsView])(implicit messages: Messages)
 
 @main("Job Admin") {
     <div class="main-title">
-        <h2>Edit jobbet</h2>
+        <h2>Edit jobbet til @site </h2>
 
     </div>
 

@@ -141,7 +141,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
 
       for {
         categoryList <- getCategoryWithJobAdsNumberList(site)
-      }yield Ok(views.html.editjob(jobAdView, categoryList))
+      }yield Ok(views.html.editjob(site, jobAdView, categoryList))
 
   }
 
