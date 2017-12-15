@@ -83,7 +83,8 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
 
   def getCategoryWithJobAdsNumberList(site:String): Future[List[CategoryWithNumberOfJobsView]] = {
     for{
-      joblist <- jobAdService.getAllJobAdViews(site)
+      list <- jobAdService.getAllJobAdViews(site)
+      joblist <- getUnexpiredJobAdList(list)
       categorylist <- categoryService.getAllCategoriesBySite(site)
     }yield categoryService.getCategoryWithNumberOfJobAdsBySite (joblist,site,categorylist)
   }
@@ -180,8 +181,6 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
       case id: String => Try(id.toInt) toOption
       case _ => None
     }
-
-
 
     if(fileCheck){
       if(param.get("joblogo").head =="link")
