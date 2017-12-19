@@ -5,7 +5,7 @@ import scala.concurrent.Future
 
 import models.Site
 
-trait SiteService {
+trait   SiteService {
   def getAllSites() : Future[List[Site]]
   def getMsg(): String
 }

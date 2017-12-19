@@ -19,14 +19,14 @@ import scala.concurrent.Future
 
 
 @Singleton
-class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configuration: Configuration, fileService: FileService, jobAdService: JobAdService, categoryService: CategoryService, companyService: CompanyService)
+class JobController @Inject()(cc: ControllerComponents, fileService: FileService, jobAdService: JobAdService, categoryService: CategoryService, companyService: CompanyService)
   extends AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getAllJobAds (site: String) = Action.async {
     for{
       list <- jobAdService.getAllJobAdViews(site)
-      unexpiredJobAds <- getUnexpiredJobAdList(list)
-      expiredJobAds <- getExpiredJobAdList(list)
+      unexpiredJobAds <- jobAdService.getUnexpiredJobAdList(list)
+      expiredJobAds <- jobAdService.getExpiredJobAdList(list)
 
     }yield Ok(views.html.jobs( jobAdService.getMsg(), list))
 
@@ -35,7 +35,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   def showUnexpiredJobs (site: String) = Action.async {
     for{
       list <- jobAdService.getAllJobAdViews(site)
-      unexpiredJobAds <- getUnexpiredJobAdList(list)
+      unexpiredJobAds <- jobAdService.getUnexpiredJobAdList(list)
       activeJobAds <- countActiveJobAds(unexpiredJobAds)
       upcomingJobAds <- countUpcomingJobAds(unexpiredJobAds.size, activeJobAds)
 
@@ -46,7 +46,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   def showExpiredJobs (site: String) = Action.async {
     for{
       list <- jobAdService.getAllJobAdViews(site)
-      expiredJobAds <- getExpiredJobAdList(list)
+      expiredJobAds <- jobAdService.getExpiredJobAdList(list)
     }yield Ok(views.html.expiredjobs( jobAdService.getMsg(),  expiredJobAds, expiredJobAds.size ))
 
   }
@@ -60,16 +60,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
     Future.successful(total - activeJobs)
   }
 
-  private def getUnexpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
-    var yesterday = DateTime.now().minusDays(1).getMillis
 
-    Future.successful(list.filter(_.enddate>yesterday))
-  }
-
-  private def getExpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
-    var today = DateTime.now().getMillis
-    Future.successful(list.filter(_.enddate<today))
-  }
 
   def index(site:String, id: Int) = Action.async{
     implicit request =>
@@ -84,7 +75,7 @@ class JobController @Inject()(cc: ControllerComponents, ws: WSClient, configurat
   def getCategoryWithJobAdsNumberList(site:String): Future[List[CategoryWithNumberOfJobsView]] = {
     for{
       list <- jobAdService.getAllJobAdViews(site)
-      joblist <- getUnexpiredJobAdList(list)
+      joblist <- jobAdService.getUnexpiredJobAdList(list)
       categorylist <- categoryService.getAllCategoriesBySite(site)
     }yield categoryService.getCategoryWithNumberOfJobAdsBySite (joblist,site,categorylist)
   }

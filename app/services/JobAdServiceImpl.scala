@@ -55,6 +55,16 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
     return futureResponse
   }
 
+  override def getUnexpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
+    var yesterday = DateTime.now().minusDays(1).getMillis
+
+    Future.successful(list.filter(_.enddate>yesterday))
+  }
+
+  override def getExpiredJobAdList(list: List[JobAdView]): Future[List[JobAdView]] = {
+    var today = DateTime.now().getMillis
+    Future.successful(list.filter(_.enddate<today))
+  }
 
   def convertJobAdViewToJsValue(jobAdView: JobAdView): JsValue = {
     implicit val format = Json.writes[JobAd]
@@ -100,7 +110,6 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
       jobAdView.company_name = companiesResult.find(c => c.id.getOrElse(-1) == jobAd.company_id).get.name
 
-      //TODO: Need to check if they are needed
       jobAdView.premium = jobAd.premium
       jobAdView.allow_personalized = jobAd.allow_personalized
 
