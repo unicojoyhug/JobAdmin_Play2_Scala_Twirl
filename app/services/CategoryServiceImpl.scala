@@ -3,24 +3,20 @@ package services
 import javax.inject.Inject
 
 import models.{Category, CategoryWithNumberOfJobsView, JobAdView}
-import play.api.Configuration
+
 import play.api.libs.json.Json
-import play.api.libs.ws.WSClient
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CategoryServiceImpl @Inject()(ws: WSClient, configuration: Configuration, site: String) extends CategoryService {
+class CategoryServiceImpl @Inject()(jobApiService: JobApiService, site: String) extends CategoryService {
 
   override def getAllCategoriesBySite(site: String): Future[List[Category]] = {
 
-    val url: String = configuration.get[String]("job_api.url")
-    val api_key: String = configuration.get[String]("security.apikeys")
-
     implicit val format = Json.reads[Category]
 
-    val futureResponse: Future[List[Category]] = ws.url(s"$url/$site/categories").addHttpHeaders("X-API-KEY" -> api_key).get().map {
+    val futureResponse: Future[List[Category]] = jobApiService.getAllCategoriesBySite(site).map {
       result => result.json.as[List[Category]]
     }
 

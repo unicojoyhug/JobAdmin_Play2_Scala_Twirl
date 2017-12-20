@@ -4,24 +4,19 @@ import javax.inject.Inject
 
 import models.{Company, CompanyView, SpecialAgreement}
 import org.joda.time.DateTime
-import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.WSClient
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CompanyServiceImpl  @Inject()(ws: WSClient, configuration: Configuration, specialAgreementService: SpecialAgreementService) extends CompanyService {
-  val url: String = configuration.get[String]("job_api.url")
-  val api_key: String = configuration.get[String]("security.apikeys")
-  val admin: String = configuration.get[String]("admin")
+class CompanyServiceImpl  @Inject()(jobApiService: JobApiService, specialAgreementService: SpecialAgreementService) extends CompanyService {
 
   override def getAllCompanies(): Future[List[Company]] = {
 
     implicit val format = Json.reads[Company]
 
-    val futureResponse: Future[List[Company]] = ws.url(s"$url/companies").addHttpHeaders("X-API-KEY" -> api_key).get().map {
+    val futureResponse: Future[List[Company]] = jobApiService.getAllCompanies().map {
       result => result.json.as[List[Company]]
     }
 
@@ -66,7 +61,7 @@ class CompanyServiceImpl  @Inject()(ws: WSClient, configuration: Configuration, 
   override def editCompany(companyView: CompanyView): Future[Int] = {
     var company = convertCompanyViewToJsValue(companyView)
 
-    val futureResponse = ws.url(s"$url/companies").addHttpHeaders("X-API-KEY" -> api_key).put(company).map {
+    val futureResponse = jobApiService.editCompany(company).map {
       result => (result.json \ "company_id").as[Int]
     }
 
@@ -91,7 +86,7 @@ class CompanyServiceImpl  @Inject()(ws: WSClient, configuration: Configuration, 
 
     var company = convertCompanyViewToJsValue(companyView)
 
-    val futureResponse = ws.url(s"$url/companies").addHttpHeaders("X-API-KEY" -> api_key).post(company).map {
+    val futureResponse = jobApiService.createCompany(company).map {
 
         result => result match {
           case x if 200 until 299 contains x.status.intValue => (result.json \ "company_id").as[Int]

@@ -11,15 +11,12 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SpecialAgreementServiceImpl @Inject()(ws: WSClient, configuration: Configuration) extends SpecialAgreementService {
-  val url:String = configuration.get[String]("job_api.url")
-  val api_key: String = configuration.get[String]("security.apikeys")
-  val admin: String = configuration.get[String]("admin")
+class SpecialAgreementServiceImpl @Inject()(jobApiService: JobApiService) extends SpecialAgreementService {
 
   override def getAllSpecialAgreements(): Future[List[SpecialAgreement]] = {
 
     implicit val format = Json.reads[SpecialAgreement]
-    val futureResponse: Future[List[SpecialAgreement]] = ws.url(s"$url/specialagreements").addHttpHeaders("X-API-KEY" -> api_key).get().map {
+    val futureResponse: Future[List[SpecialAgreement]] = jobApiService.getAllSpecialAgreements().map {
       result => result.json.as[List[SpecialAgreement]]
     }
 
@@ -31,7 +28,7 @@ class SpecialAgreementServiceImpl @Inject()(ws: WSClient, configuration: Configu
 
     val specialAgreement = new SpecialAgreement(
       None,
-      "maengderabat",
+      "maengderabat", //This value is temporary value set by JP.
       DateTime.now().getMillis,
       DateTime.now().getMillis,
       companyId
@@ -39,7 +36,7 @@ class SpecialAgreementServiceImpl @Inject()(ws: WSClient, configuration: Configu
 
     val specialAgreementJson =  Json.toJson[SpecialAgreement](specialAgreement)
 
-    val futureResponse = ws.url(s"$url/specialagreements").addHttpHeaders("X-API-KEY" -> api_key).post(specialAgreementJson).map {
+    val futureResponse = jobApiService.createSpecialAgreements(specialAgreementJson).map {
       result => (result.json \ "specialagreement_id").as[Int]
 
     }
@@ -48,9 +45,8 @@ class SpecialAgreementServiceImpl @Inject()(ws: WSClient, configuration: Configu
   }
 
   override def deleteSpecialAgreements(id: Int): Future[Int] = {
-    //v1/admin/specialagreements/:id
 
-    val futureResponse = ws.url(s"$url/specialagreements/$id").addHttpHeaders("X-API-KEY" -> api_key).delete().map {
+    val futureResponse = jobApiService.deleteSpecialAgreements(id).map {
       result => (result.json \ "Status").as[String] match {
         case "Ok" => 1
         case _ => -1

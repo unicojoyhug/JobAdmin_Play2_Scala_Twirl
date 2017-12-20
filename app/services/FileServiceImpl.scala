@@ -18,10 +18,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Try, Success, Failure}
 
+/**
+  * inspired by https://github.com/playframework/play-scala-fileupload-example
+  * @param jobApiService
+  */
 
-class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) extends FileService {
-  val api_key: String = configuration.get[String]("security.apikeys")
-  val url: String = configuration.get[String]("job_api.url")
+class FileServiceImpl  @Inject()(jobApiService: JobApiService) extends FileService {
 
   override def uploadFile(file: Option[MultipartFormData.FilePart[File]], id: Int, caseName: String): Future[Try[Int]]= {
 
@@ -30,8 +32,8 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
         Logger.info(s"key = ${key}, filename = ${filename}, contentType = ${contentType}, file = $file")
 
         for{
-          fupload <- uploadFile(id, caseName, key, filename, contentType, file)
-          result <- handleFileupload(fupload)
+          fileUpload <- jobApiService.uploadFile(id, caseName, key, filename, contentType, file)
+          result <- handleFileupload(fileUpload)
           _ <- operateOnTempFile(file)
         } yield result
 
@@ -39,10 +41,6 @@ class FileServiceImpl  @Inject()(ws: WSClient, configuration: Configuration ) ex
     }
   }
 
-  private def uploadFile(id: Int, caseName: String, key: String, filename: String, contentType: Option[String], file: File) = {
-    ws.url(s"$url/$caseName/$key/$id").addHttpHeaders("X-API-KEY" -> api_key)
-      .post(Source(FilePart(key, s"${filename}", Option(s"${contentType}"), FileIO.fromPath(file.toPath)) :: DataPart("key", "value") :: List()))
-  }
 
   def handleFileupload(result: WSResponse):Future[Try[Int]] ={
     result match {

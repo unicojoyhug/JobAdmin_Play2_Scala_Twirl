@@ -102,10 +102,10 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
     }
   }
 
-  private def uploadFile(request: Request[MultipartFormData[File]], companyId: Int, joblogoType: String): Future[Try[Int]] = {
+  private def uploadFile(request: Request[MultipartFormData[File]], jobAdId: Int, joblogoType: String): Future[Try[Int]] = {
 
     if (joblogoType == "pdf") {
-      fileService.uploadFile(request.body.file("pdf"), companyId, caseName = "jobs")
+      fileService.uploadFile(request.body.file("pdf"), jobAdId, caseName = "jobs")
     } else {
       Future.successful(Failure(new Exception("No file to upload")))
     }

@@ -11,14 +11,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import models.Site
 
 @Singleton
-class SiteServiceImpl @Inject()(ws: WSClient, configuration: Configuration) extends SiteService {
+class SiteServiceImpl @Inject()(jobApiService: JobApiService) extends SiteService {
 
 
   override def getAllSites(): Future[List[Site]] = {
-    val url:String = configuration.get[String]("job_api.url")
-    val api_key: String = configuration.get[String]("security.apikeys")
     implicit val format = Json.reads[Site]
-    val futureResponse: Future[List[Site]] = ws.url(s"$url/sites").addHttpHeaders("X-API-KEY" -> api_key).get().map {
+    val futureResponse: Future[List[Site]] = jobApiService.getAllSites().map {
       result => result.json.as[List[Site]]
     }
 

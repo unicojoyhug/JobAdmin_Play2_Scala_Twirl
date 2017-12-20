@@ -6,31 +6,27 @@ import models._
 import org.joda.time.DateTime
 import play.api.Configuration
 import play.api.libs.json._
-import play.api.libs.ws.WSClient
-import play.api.libs.ws.JsonBodyWritables._
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, categoryService: CategoryService, siteService: SiteService, configuration: Configuration ) extends JobAdService {
-  val api_key: String = configuration.get[String]("security.apikeys")
-  val url: String = configuration.get[String]("job_api.url")
-  val admin: String = configuration.get[String]("admin")
+class JobAdServiceImpl @Inject()(configuration: Configuration, jobApiService: JobApiService, companyService: CompanyService, categoryService: CategoryService, siteService: SiteService ) extends JobAdService {
 
+  val admin = configuration.get[String]("admin")
+
+  override def getMsg() = "Vælg Site"
 
   def getAllJobs(site: String): Future[List[JobAd]] = {
 
     implicit val format = Json.reads[JobAd]
-    val futureResponse: Future[List[JobAd]] = ws.url(s"$url/$site/jobs").addHttpHeaders("X-API-KEY" -> api_key).get().map {
+    val futureResponse: Future[List[JobAd]] = jobApiService.getAllJobAdViews(site).map {
       result => result.json.as[List[JobAd]]
     }
-
 
     return futureResponse
   }
 
-  override def getMsg() = "Vælg Site"
 
   override def getAllJobAdViews(site: String): Future[List[JobAdView]] = {
 
@@ -48,7 +44,24 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
     var jobAd = convertJobAdViewToJsValue(jobAdView)
 
-    val futureResponse = ws.url(s"$url/jobs").addHttpHeaders("X-API-KEY" -> api_key).post(jobAd).map {
+    val futureResponse = jobApiService.createJobAd(jobAd).map {
+      result => (result.json \ "job_id").as[Int]
+    }
+
+    return futureResponse
+  }
+
+  override def deleteJobAd(jobAdId: Int): Future[String] = {
+    val futureResponse = jobApiService.deleteJobAd(jobAdId).map {
+      result => (result.json \ "Status").as[String]
+    }
+    return futureResponse
+  }
+
+  override def editJobAd(jobAdView: JobAdView): Future[Int] = {
+    var jobAd = convertJobAdViewToJsValue(jobAdView)
+
+    val futureResponse = jobApiService.editJobAd(jobAd).map {
       result => (result.json \ "job_id").as[Int]
     }
 
@@ -125,22 +138,5 @@ class JobAdServiceImpl @Inject()(ws: WSClient, companyService: CompanyService, c
 
     return jobAdViewList.toList
 
-  }
-
-  override def deleteJobAd(jobAdId: Int): Future[String] = {
-    val futureResponse = ws.url(s"$url/jobs/$jobAdId").addHttpHeaders("X-API-KEY" -> api_key).delete().map {
-      result => (result.json \ "Status").as[String]
-    }
-    return futureResponse
-  }
-
-  override def editJobAd(jobAdView: JobAdView): Future[Int] = {
-    var jobAd = convertJobAdViewToJsValue(jobAdView)
-
-    val futureResponse = ws.url(s"$url/jobs").addHttpHeaders("X-API-KEY" -> api_key).put(jobAd).map {
-      result => (result.json \ "job_id").as[Int]
-    }
-
-    return futureResponse
   }
 }

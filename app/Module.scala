@@ -23,8 +23,7 @@ class Module extends AbstractModule {
     bind(classOf[CategoryService]).to(classOf[CategoryServiceImpl])
     bind(classOf[SpecialAgreementService]).to(classOf[SpecialAgreementServiceImpl])
     bind(classOf[FileService]).to(classOf[FileServiceImpl])
-
-
+    bind(classOf[JobApiService]).to(classOf[JobApiServiceImpl])
   }
 
 }
