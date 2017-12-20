@@ -5,13 +5,13 @@ import java.nio.file.{Files, Path}
 import javax.inject.Inject
 
 import akka.stream.IOResult
-import akka.stream.scaladsl.{FileIO, Sink, Source}
+import akka.stream.scaladsl.{FileIO, Sink}
 import akka.util.ByteString
 import play.api.libs.streams.Accumulator
-import play.api.{Configuration, Logger}
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.Logger
+import play.api.libs.ws.WSResponse
 import play.api.mvc.MultipartFormData
-import play.api.mvc.MultipartFormData.{DataPart, FilePart}
+import play.api.mvc.MultipartFormData.FilePart
 import play.core.parsers.Multipart.FileInfo
 
 import scala.concurrent.ExecutionContext.Implicits.global

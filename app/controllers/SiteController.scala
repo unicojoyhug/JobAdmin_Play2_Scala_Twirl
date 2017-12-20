@@ -2,8 +2,6 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import play.api.Configuration
-import play.api.libs.ws.WSClient
 import play.api.mvc.{AbstractController, ControllerComponents}
 
 import scala.concurrent.ExecutionContext.Implicits.global
