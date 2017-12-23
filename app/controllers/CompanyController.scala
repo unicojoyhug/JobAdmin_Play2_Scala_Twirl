@@ -87,7 +87,7 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     Ok(views.html.createcompany())
   }
 
-  def createCompany() = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) { implicit request =>
+  def createCompany() = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) {  request =>
 
     val param = request.body.asFormUrlEncoded
 

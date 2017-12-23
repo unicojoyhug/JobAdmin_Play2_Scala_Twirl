@@ -5,9 +5,7 @@ import java.io.File
 import org.joda.time.format.DateTimeFormat
 import javax.inject.{Inject, Singleton}
 
-import play.api._
 import play.api.mvc._
-import play.api.libs.ws.WSClient
 import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -62,7 +60,7 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
 
 
 
-  def index(site:String, id: Int) = Action.async{
+  def index(site:String, id: Int)= Action.async{
     implicit request =>
       for {
         companyList <-companyService.getAllCompanies()
@@ -81,11 +79,12 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
   }
 
 
-  def createJobAd(siteId: Int) = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) { implicit request =>
+  def createJobAd(siteId: Int) = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) { request =>
 
     val param = request.body.asFormUrlEncoded
 
     var jobAdView = getCommonDataFromView(Some(param), caseName = "jobAd", param.size, fileCheck=true)
+
 
     jobAdView.site_id = siteId
 
@@ -93,11 +92,11 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
 
     var result = for {
       newJobAdId <- jobAdService.createJobAd(jobAdView)
-      uploadFileId <- uploadFile(request, newJobAdId, joblogoType)
-    }yield (0)
+      uploadFileStatus <- uploadFile(request, newJobAdId, joblogoType)
+    }yield uploadFileStatus
 
     result.map {
-      res =>
+      res=>
         Redirect(routes.SiteController.getAllSites())
     }
   }
@@ -138,7 +137,7 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
   }
 
   def editJobAd(site: String, siteId: Int, id: Int) = Action.async(parse.multipartFormData(fileService.handleFilePartAsFile)) {
-    implicit request =>
+    request =>
       val param = request.body.asFormUrlEncoded
       var jobAdView = getCommonDataFromView(Some(param), caseName = "jobAd", param.size, fileCheck = true)
 
@@ -175,7 +174,7 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
 
     if(fileCheck){
       if(param.get("joblogo").head =="link")
-      jobAdView.externallink = Some(param.get("externallink").head)
+        jobAdView.externallink = Some(param.get("externallink").head)
     }else{
       jobAdView.externallink = Some(param.get("externallink").head)
     }

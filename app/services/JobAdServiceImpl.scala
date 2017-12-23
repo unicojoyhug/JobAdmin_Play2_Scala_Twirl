@@ -31,11 +31,11 @@ class JobAdServiceImpl @Inject()(configuration: Configuration, jobApiService: Jo
   override def getAllJobAdViews(site: String): Future[List[JobAdView]] = {
 
     for {
-      r1 <- getAllJobs(site)
-      r2 <- companyService.getAllCompanies()
-      r3 <- categoryService.getAllCategoriesBySite(site)
-      r4 <- siteService.getAllSites()
-    } yield convertDomainToViewModel(r1, r2, r3, r4)
+      jobAdList <- getAllJobs(site)
+      companyList <- companyService.getAllCompanies()
+      categoryList <- categoryService.getAllCategoriesBySite(site)
+      siteList <- siteService.getAllSites()
+    } yield convertDomainToViewModel(jobAdList, companyList, categoryList, siteList)
 
   }
 
