@@ -21,8 +21,4 @@ class SiteController @Inject()(cc: ControllerComponents, siteService: SiteServic
     }
   }
 
-  def selectSite(siteId: Int) = Action {
-
-    Ok((s"Selected Id = $siteId"))
-  }
 }

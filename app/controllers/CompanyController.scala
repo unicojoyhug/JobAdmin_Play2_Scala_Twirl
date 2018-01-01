@@ -53,7 +53,7 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
       _ <- uploadFile(request, editedCompanyId, companyLogo)
       specialAgreementId <- setSpecialAgreement(editedCompanyId, company.specialAgreement, company.specialAgreementId)
 
-    }yield (0)
+    }yield specialAgreementId
 
     result.map{ res =>
       Redirect(routes.CompanyController.getAllCompanyViews())
@@ -100,7 +100,7 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
       _ <- uploadFile(request, newCompanyId, "image")
       specialAgreementId <- setSpecialAgreement(newCompanyId, company.specialAgreement, None)
 
-    }yield (0)
+    }yield specialAgreementId
 
     result.map{ res =>
       Redirect(routes.CompanyController.getAllCompanyViews())

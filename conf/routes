@@ -2,24 +2,29 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
+
 ###
 # summary: AWS health check
 # description: Health check used by load balancer
 ###
 GET     /health                                         @controllers.HealthController.health
 
-
 # Map static resources from the /public folder to the /assets URL path
 GET		/assets/*file			                        @controllers.Assets.at(path="/public", file)
 
 
-# Get All Watches Sites
+###
+# summary: Get all Watchsites
+# description: The list of Watchsites for seleting a site
+###
 GET     /                                               @controllers.SiteController.getAllSites
 
-GET     /site/:siteId                                   @controllers.SiteController.selectSite(siteId: Int)
-
-#Job
+###
+# summary: JobAd handling
+# description: JobAd list and CRUD functions
+###
 GET     /jobs/:site/unexpiredJobs                       @controllers.JobController.showUnexpiredJobs(site: String)
+
 GET     /jobs/:site/expiredJobs                         @controllers.JobController.showExpiredJobs(site: String)
 
 GET     /jobs/:site                                     @controllers.JobController.getAllJobAds(site: String)
@@ -27,7 +32,6 @@ GET     /jobs/:site                                     @controllers.JobControll
 GET     /jobs/:site/:id                                 @controllers.JobController.deleteJobAd(site:String, id: Int)
 
 GET     /job/newJob/:site/:id                           @controllers.JobController.index(site:String, id: Int)
-#GET     /job/newJob/                                    @controllers.JobController.index()
 
 + nocsrf
 POST     /job/newJob/:siteId                            @controllers.JobController.createJobAd(siteId: Int)
@@ -39,16 +43,15 @@ POST    /job/editJob/:site/:jobId                       @controllers.JobControll
 POST     /job/editJob/:site/:siteId/:jobId              @controllers.JobController.editJobAd(site:String, siteId: Int, jobId: Int)
 
 
-#Company
+###
+# summary: Company handling
+# description: Company list and limited CRUD functions (Delete function is not supported - check Job API)
+###
 
 GET     /company                                        @controllers.CompanyController.getAllCompanyViews
 
 GET     /company/newCompany                             @controllers.CompanyController.index
 
-###
-# summary: create company
-# description: create company
-###
 + nocsrf
 POST     /company/newCompany                            @controllers.CompanyController.createCompany
 

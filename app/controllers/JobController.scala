@@ -1,20 +1,18 @@
 package controllers
 
 import java.io.File
-
 import org.joda.time.format.DateTimeFormat
 import javax.inject.{Inject, Singleton}
+import org.joda.time.DateTime
 
 import play.api.mvc._
-import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Try}
-import services.{CategoryService, CompanyService, FileService, JobAdService}
-import models.{CategoryWithNumberOfJobsView, JobAdView}
-
 import scala.concurrent.Future
 
+import services.{CategoryService, CompanyService, FileService, JobAdService}
+import models.{CategoryWithNumberOfJobsView, JobAdView}
 
 @Singleton
 class JobController @Inject()(cc: ControllerComponents, fileService: FileService, jobAdService: JobAdService, categoryService: CategoryService, companyService: CompanyService)
@@ -88,11 +86,11 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
 
     jobAdView.site_id = siteId
 
-    val joblogoType = param.get("joblogo").head.head
+    val jobLogoType = param.get("joblogo").head.head
 
     var result = for {
       newJobAdId <- jobAdService.createJobAd(jobAdView)
-      uploadFileStatus <- uploadFile(request, newJobAdId, joblogoType)
+      uploadFileStatus <- uploadFile(request, newJobAdId, jobLogoType)
     }yield uploadFileStatus
 
     result.map {
@@ -101,9 +99,9 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
     }
   }
 
-  private def uploadFile(request: Request[MultipartFormData[File]], jobAdId: Int, joblogoType: String): Future[Try[Int]] = {
+  private def uploadFile(request: Request[MultipartFormData[File]], jobAdId: Int, jobLogoType: String): Future[Try[Int]] = {
 
-    if (joblogoType == "pdf") {
+    if (jobLogoType == "pdf") {
       fileService.uploadFile(request.body.file("pdf"), jobAdId, caseName = "jobs")
     } else {
       Future.successful(Failure(new Exception("No file to upload")))
@@ -148,12 +146,12 @@ class JobController @Inject()(cc: ControllerComponents, fileService: FileService
         case _ => None
       }
 
-      val joblogoType = param.get("joblogo").head.head
+      val jobLogoType = param.get("joblogo").head.head
 
       var result = for {
         editedJobAdId <- jobAdService.editJobAd(jobAdView)
-        uploadFileId <- uploadFile(request, editedJobAdId, joblogoType)
-      }yield (0)
+        uploadFileId <- uploadFile(request, editedJobAdId, jobLogoType)
+      }yield uploadFileId
 
       result.map {
         res =>
