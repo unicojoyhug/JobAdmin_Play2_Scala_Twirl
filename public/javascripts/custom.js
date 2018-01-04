@@ -4,6 +4,7 @@ var admin = {
         admin.setDataTable();
         admin.setDeleteJobAlert();
         admin.setCreateAlert();
+        admin.setEditAlert();
         admin.setDatePicker();
         admin.validator();
     },
@@ -101,7 +102,7 @@ var admin = {
                 dangerMode: true,
             }).then((willDelete) => {
                 if (willDelete) {
-                    swal("Jobbet er slettet", {
+                    swal("Jobbet er slettet.", {
                         icon: "success",
                     });
 
@@ -130,15 +131,45 @@ var admin = {
                 dangerMode: false,
             }).then((willCreate) => {
                 if (willCreate) {
-                    swal(alertType +" er oprettet", {
+                    swal(alertType +" er oprettet.", {
                         icon: "success",
                     });
                     form.submit();
 
                 }else {
                     swal("Annulleret", alertType +" bliver ikke oprettet.", "error");
-        }
+                }
+            });
         });
+
+    },
+
+    setEditAlert: function () {
+        $('.btn-edit-submit-alert').on('click', function (e) {
+
+            e.preventDefault();
+            var form = $(this).parents('form');
+
+            var alertType = $(this).attr('data-alert-type');
+
+            swal({
+                title: "Er du sikker?",
+                text: alertType + " vil blive ændret.",
+                icon: "warning",
+                buttons: true,
+                buttons: ["Annuller", "Rediger"],
+                dangerMode: false,
+            }).then((willCreate) => {
+                if (willCreate) {
+                    swal(alertType +" er ændret.", {
+                        icon: "success",
+                    });
+                    form.submit();
+
+                }else {
+                    swal("Annulleret", alertType +" bliver ikke ændret.", "error");
+                }
+            });
         });
 
     },
