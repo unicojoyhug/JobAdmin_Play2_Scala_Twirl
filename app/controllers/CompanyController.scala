@@ -41,8 +41,8 @@ class CompanyController @Inject()(cc: ControllerComponents, companyService: Comp
     var company = new CompanyView()
     company.id = companyId
     company.name = param.get("name").head.head
-    company.specialAgreement = param.get("specialAgreement").head.head.toBoolean
     company.specialAgreementId = Some(param.get("specialAgreementId").head.head.toInt)
+    company.specialAgreement = param.get("specialAgreement").head.head.toBoolean
     company.logo = param.get("externallink").head.head
 
 
